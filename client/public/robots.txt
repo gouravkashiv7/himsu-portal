@@ -1,0 +1,10 @@
+# *
+User-agent: *
+Allow: /
+
+# Host
+Host: https://himsu.in
+
+# Sitemaps
+Sitemap: https://himsu.in/sitemap.xml
+Sitemap: https://himsu.in/server-sitemap.xml
