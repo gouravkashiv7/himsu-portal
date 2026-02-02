@@ -19,22 +19,12 @@ export function Footer() {
 
           <div className="flex gap-4">
             <Link
-              href="#"
+              href="https://www.instagram.com/himsu_official/?hl=en"
+              target="_blank"
+              rel="noopener noreferrer"
               className="p-2 bg-background rounded-full hover:text-primary transition-colors border shadow-sm"
             >
               <Instagram className="w-4 h-4" />
-            </Link>
-            <Link
-              href="#"
-              className="p-2 bg-background rounded-full hover:text-primary transition-colors border shadow-sm"
-            >
-              <Facebook className="w-4 h-4" />
-            </Link>
-            <Link
-              href="#"
-              className="p-2 bg-background rounded-full hover:text-primary transition-colors border shadow-sm"
-            >
-              <Twitter className="w-4 h-4" />
             </Link>
             <Link
               href="mailto:contact@himsu.org"

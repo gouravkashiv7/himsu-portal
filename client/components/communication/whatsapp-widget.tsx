@@ -48,14 +48,22 @@ export function WhatsAppWidget() {
               </a>
             ))}
 
-            <div className="border-t my-2 pt-2">
+            <div className="border-t my-2 pt-2 space-y-2">
               <a
-                href="https://wa.me/919876543210" // Placeholder number
+                href="https://wa.me/919988088900"
                 target="_blank"
                 rel="noreferrer"
-                className="block text-center py-2 text-sm font-medium text-[#25D366] hover:bg-green-50 rounded-lg transition-colors"
+                className="block text-center py-2 text-sm font-medium text-[#25D366] hover:bg-green-50 rounded-lg transition-colors border border-green-100"
               >
-                Chat with President
+                Chat with President (Avneet Negi)
+              </a>
+              <a
+                href="https://wa.me/919988088900"
+                target="_blank"
+                rel="noreferrer"
+                className="block text-center py-2 text-sm font-medium text-primary hover:bg-primary/5 rounded-lg transition-colors border border-primary/10"
+              >
+                Chat with Volunteer
               </a>
             </div>
           </div>

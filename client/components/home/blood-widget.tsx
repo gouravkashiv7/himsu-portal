@@ -22,8 +22,9 @@ export function BloodDonationWidget() {
     return (
       <Button
         onClick={() => setIsMinimized(false)}
-        className="fixed bottom-4 right-4 z-50 rounded-full shadow-lg bg-red-600 hover:bg-red-700 text-white animate-pulse"
+        className="fixed bottom-4 right-4 z-50 rounded-full shadow-lg animate-pulse"
         size="icon"
+        variant="destructive"
       >
         <Droplet className="h-6 w-6" />
       </Button>
@@ -31,10 +32,10 @@ export function BloodDonationWidget() {
   }
 
   return (
-    <Card className="fixed bottom-4 right-4 z-50 w-80 shadow-2xl border-red-200 dark:border-red-900 bg-card/95 backdrop-blur slide-in-from-bottom-5 animate-in">
-      <CardHeader className="bg-red-50 dark:bg-red-950/30 rounded-t-lg pb-4">
+    <Card className="fixed bottom-4 right-4 z-50 w-80 shadow-2xl border-destructive/20 bg-card/95 backdrop-blur slide-in-from-bottom-5 animate-in">
+      <CardHeader className="bg-destructive/10 rounded-t-lg pb-4">
         <div className="flex items-center justify-between">
-          <CardTitle className="text-red-600 flex items-center text-lg">
+          <CardTitle className="text-destructive flex items-center text-lg">
             <Heart className="w-5 h-5 mr-2 fill-current" />
             Emergency Blood
           </CardTitle>
@@ -42,7 +43,7 @@ export function BloodDonationWidget() {
             <Button
               variant="ghost"
               size="icon"
-              className="h-6 w-6"
+              className="h-6 w-6 hover:bg-destructive/20"
               onClick={() => setIsMinimized(true)}
             >
               <div className="h-0.5 w-3 bg-foreground/50" />
@@ -50,7 +51,7 @@ export function BloodDonationWidget() {
             <Button
               variant="ghost"
               size="icon"
-              className="h-6 w-6 hover:text-red-500"
+              className="h-6 w-6 hover:bg-destructive/20 hover:text-destructive"
               onClick={() => setIsOpen(false)}
             >
               <X className="h-4 w-4" />
@@ -60,19 +61,19 @@ export function BloodDonationWidget() {
         <CardDescription>Urgent requirements in Chandigarh/PU</CardDescription>
       </CardHeader>
       <CardContent className="pt-4 space-y-3">
-        <div className="flex items-center justify-between text-sm p-2 bg-muted rounded border border-l-4 border-l-red-500">
-          <span className="font-bold text-red-600">O+ Needed</span>
+        <div className="flex items-center justify-between text-sm p-2 bg-muted rounded border-l-4 border-l-destructive">
+          <span className="font-bold text-destructive">O+ Needed</span>
           <span className="text-xs text-muted-foreground">PGI · 2 hrs ago</span>
         </div>
-        <div className="flex items-center justify-between text-sm p-2 bg-muted rounded border border-l-4 border-l-red-500">
-          <span className="font-bold text-red-600">AB- Needed</span>
+        <div className="flex items-center justify-between text-sm p-2 bg-muted rounded border-l-4 border-l-destructive">
+          <span className="font-bold text-destructive">AB- Needed</span>
           <span className="text-xs text-muted-foreground">
             GMCH-32 · 5 hrs ago
           </span>
         </div>
       </CardContent>
       <CardFooter>
-        <Button className="w-full bg-red-600 hover:bg-red-700 text-white">
+        <Button className="w-full" variant="destructive">
           Request / Donate
         </Button>
       </CardFooter>
