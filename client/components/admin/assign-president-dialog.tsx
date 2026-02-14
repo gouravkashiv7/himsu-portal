@@ -16,7 +16,7 @@ import { Button } from "@/components/ui/button";
 const baseSchema = z.object({
   name: z.string().min(2, "Name is required"),
   email: z.string().email("Invalid email"),
-  password: z.string().optional(),
+  password: z.union([z.string(), z.undefined()]),
 });
 
 type FormData = z.infer<typeof baseSchema>;

@@ -31,6 +31,9 @@ import { useAuth } from "@/hooks/use-auth";
 
 import { Suspense, useEffect, useState } from "react";
 
+// Force dynamic rendering for this page
+export const dynamic = "force-dynamic";
+
 function AdminDashboardContent() {
   const { user, loading } = useAuth();
   const isSuperAdmin = user?.role === "superadmin";
