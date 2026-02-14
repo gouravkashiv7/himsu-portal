@@ -5,23 +5,25 @@ import bcrypt from "bcryptjs";
 
 export async function POST(req: NextRequest) {
   try {
+    const body = await req.json();
     const {
       name,
       email,
       password,
-      role,
       college,
-      otherCollegeName,
       phone,
       bloodGroup,
       isBloodDonor,
       location,
-    } = await req.json();
+      otherCollegeName,
+    } = body;
+
+    const normalizedEmail = email.toLowerCase().trim();
 
     await dbConnect();
 
     // Check if user exists
-    const existingUser = await User.findOne({ email });
+    const existingUser = await User.findOne({ email: normalizedEmail });
     if (existingUser) {
       return NextResponse.json(
         { success: false, message: "User already exists with this email" },
@@ -32,16 +34,11 @@ export async function POST(req: NextRequest) {
     // Hash password
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    // Create user
-    // Note: 'role' comes from the frontend but should ideally be sanitized.
-    // Here we trust 'member' or 'volunteer'. 'superadmin' creation should be protected.
-    // For safety, force role to be 'member' or 'volunteer' if not explicitly allowed or check token.
-    // Simplifying for now as per requirements.
     const userRole = "unverified";
 
     const user = await User.create({
       name,
-      email,
+      email: normalizedEmail,
       password: hashedPassword,
       role: userRole,
       college,
@@ -55,7 +52,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({
       success: true,
       data: {
-        id: user._id,
+        id: user._id.toString(),
         name: user.name,
         email: user.email,
         role: user.role,

@@ -9,9 +9,10 @@ export async function POST(req: NextRequest) {
 
   try {
     const { collegeId, name, email, password } = await req.json();
+    const normalizedEmail = email.toLowerCase().trim();
 
     // 1. Check if user exists
-    const existingUser = await User.findOne({ email });
+    const existingUser = await User.findOne({ email: normalizedEmail });
     if (existingUser) {
       return NextResponse.json(
         { success: false, message: "User with this email already exists" },
@@ -25,7 +26,7 @@ export async function POST(req: NextRequest) {
     // 3. Create President User
     const user = await User.create({
       name,
-      email,
+      email: normalizedEmail,
       password: hashedPassword,
       role: "president",
       college: collegeId,

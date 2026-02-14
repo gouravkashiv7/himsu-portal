@@ -9,7 +9,13 @@ const LocationSchema = new Schema({
 const UserSchema = new Schema(
   {
     name: { type: String, required: true },
-    email: { type: String, required: true, unique: true },
+    email: {
+      type: String,
+      required: true,
+      unique: true,
+      lowercase: true,
+      trim: true,
+    },
     password: { type: String, required: true },
     image: { type: String }, // Base64 or URL
     phone: { type: String },
@@ -38,9 +44,4 @@ const UserSchema = new Schema(
   { timestamps: true },
 );
 
-// Force model recompilation to apply schema changes (enum updates) in dev mode
-if (mongoose.models.User) {
-  delete mongoose.models.User;
-}
-
-export default mongoose.model("User", UserSchema);
+export default mongoose.models.User || mongoose.model("User", UserSchema);

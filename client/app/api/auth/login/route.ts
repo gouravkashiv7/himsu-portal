@@ -8,7 +8,13 @@ export async function POST(req: NextRequest) {
     await dbConnect();
     const { email, password } = await req.json();
 
-    const user = await User.findOne({ email });
+    // Normalize email for lookup
+    const normalizedEmail = email.toLowerCase().trim();
+
+    // Case-insensitive search to handle any legacy mixed-case emails
+    const user = await User.findOne({
+      email: { $regex: new RegExp(`^${normalizedEmail}$`, "i") },
+    });
 
     if (!user) {
       return NextResponse.json(
@@ -25,15 +31,11 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // In a real app, use JWT and secure cookies.
-    // For this demonstration, we'll return the role and rely on client-side state
-    // But to make it slightly persistent, we can set a cookie.
-
     const response = NextResponse.json({
       success: true,
       role: user.role,
       user: {
-        id: user._id,
+        id: user._id.toString(),
         name: user.name,
         email: user.email,
         role: user.role,
@@ -44,22 +46,24 @@ export async function POST(req: NextRequest) {
     });
 
     response.cookies.set("auth_role", user.role, {
-      httpOnly: false, // Allow client to read for simple routing
+      httpOnly: false,
       maxAge: 60 * 60 * 24 * 7, // 1 week
+      path: "/",
     });
 
     response.cookies.set(
       "auth_user",
-      JSON.stringify({
-        id: user._id,
-        name: user.name,
-        image: user.image,
-        college: user.college,
-        rejectionReason: user.rejectionReason,
-      }),
+      encodeURIComponent(
+        JSON.stringify({
+          id: user._id.toString(),
+          name: user.name,
+          role: user.role,
+        }),
+      ),
       {
         httpOnly: false,
         maxAge: 60 * 60 * 24 * 7,
+        path: "/",
       },
     );
 

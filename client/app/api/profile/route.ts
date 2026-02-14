@@ -85,13 +85,12 @@ export async function PATCH(req: NextRequest) {
       JSON.stringify({
         id: user._id,
         name: user.name,
-        image: user.image,
-        college: user.college?._id || user.college,
-        rejectionReason: user.rejectionReason,
+        role: user.role,
       }),
       {
         httpOnly: false,
         maxAge: 60 * 60 * 24 * 7,
+        path: "/",
       },
     );
 

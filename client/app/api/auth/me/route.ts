@@ -1,20 +1,70 @@
 import { NextRequest, NextResponse } from "next/server";
+import dbConnect from "@/lib/db";
+import User from "@/lib/models/User";
 
 export async function GET(req: NextRequest) {
   const authUser = req.cookies.get("auth_user");
   const authRole = req.cookies.get("auth_role");
 
-  if (!authUser || !authRole) {
+  if (!authUser) {
     return NextResponse.json({ success: false });
   }
 
   try {
-    const user = JSON.parse(authUser.value);
-    return NextResponse.json({
-      success: true,
-      user: { ...user, role: authRole.value },
-    });
+    await dbConnect();
+
+    // Decode cookie to get user ID
+    const rawValue = authUser.value;
+    let jsonString = rawValue;
+    try {
+      jsonString = decodeURIComponent(rawValue);
+    } catch (e) {
+      jsonString = rawValue;
+    }
+
+    const cookieData = JSON.parse(jsonString);
+    const userId = cookieData.id;
+
+    if (!userId) {
+      return NextResponse.json({ success: false });
+    }
+
+    // Fetch fresh user data from DB
+    const user = await User.findById(userId);
+
+    if (!user) {
+      return NextResponse.json({ success: false });
+    }
+
+    return NextResponse.json(
+      {
+        success: true,
+        user: {
+          id: user._id.toString(),
+          name: user.name,
+          email: user.email,
+          role: user.role,
+          image: user.image,
+          college: user.college,
+          rejectionReason: user.rejectionReason,
+          isCampusVolunteer: user.isCampusVolunteer,
+        },
+      },
+      {
+        headers: {
+          "Cache-Control": "no-store, max-age=0",
+        },
+      },
+    );
   } catch (e) {
-    return NextResponse.json({ success: false });
+    console.error("Auth Me Error:", e);
+    return NextResponse.json(
+      { success: false },
+      {
+        headers: {
+          "Cache-Control": "no-store, max-age=0",
+        },
+      },
+    );
   }
 }

@@ -22,7 +22,7 @@ const navLinks = [
 export function Navbar() {
   const [isOpen, setIsOpen] = React.useState(false);
   const [scrolled, setScrolled] = React.useState(false);
-  const { user, logout } = useAuth();
+  const { user, logout, loading } = useAuth();
 
   React.useEffect(() => {
     const handleScroll = () => {
@@ -53,10 +53,10 @@ export function Navbar() {
             />
           </div>
           <div className="flex flex-col">
-            <span className="text-xl font-bold tracking-tight text-primary leading-none">
+            <span className="text-lg md:text-xl font-bold tracking-tight text-primary leading-none">
               HIMSU
             </span>
-            <span className="text-[10px] font-medium text-muted-foreground tracking-widest uppercase">
+            <span className="text-[9px] md:text-[10px] font-medium text-muted-foreground tracking-widest uppercase hidden sm:block">
               Himachal Students Union
             </span>
           </div>
@@ -88,7 +88,9 @@ export function Navbar() {
             <Search className="w-5 h-5" />
           </Button>
 
-          {user ? (
+          {loading ? (
+            <div className="w-10 h-10 rounded-full bg-muted animate-pulse" />
+          ) : user ? (
             <div className="flex items-center gap-4">
               <div className="flex items-center gap-3">
                 <Link
@@ -109,7 +111,7 @@ export function Navbar() {
                     ) : (
                       <div className="w-full h-full bg-muted flex items-center justify-center text-xs font-black text-muted-foreground/60 focus:outline-none">
                         {user.name
-                          .split(" ")
+                          ?.split(" ")
                           .map((n: string) => n[0])
                           .join("")
                           .toUpperCase()}
@@ -182,24 +184,110 @@ export function Navbar() {
 
       {/* Mobile Menu */}
       {isOpen && (
-        <div className="absolute top-full left-0 right-0 glass border-t p-4 md:hidden flex flex-col space-y-4 animate-accordion-down">
-          {navLinks.map((link) => (
-            <Link
-              key={link.label}
-              href={link.href}
-              className="block text-sm font-medium py-2 border-b border-border/50 last:border-0"
-              onClick={() => setIsOpen(false)}
-            >
-              {link.label}
-            </Link>
-          ))}
-          <div className="flex items-center gap-4 pt-2 border-t border-border/50">
-            <ThemeToggle />
-            <Link href="/join?tab=member" className="flex-1">
-              <Button className="w-full bg-primary text-white shadow-lg shadow-green-200/50 dark:shadow-none">
-                Join HIMSU
-              </Button>
-            </Link>
+        <div className="absolute top-full left-0 right-0 glass border-t p-4 md:hidden flex flex-col space-y-4 animate-in slide-in-from-top-2 duration-200">
+          <nav className="flex flex-col space-y-1">
+            {navLinks.map((link) => (
+              <Link
+                key={link.label}
+                href={link.href}
+                className={cn(
+                  "block text-sm font-semibold py-3 px-4 rounded-xl transition-colors",
+                  link.highlight
+                    ? "text-destructive bg-destructive/5"
+                    : "text-foreground hover:bg-muted",
+                )}
+                onClick={() => setIsOpen(false)}
+              >
+                {link.label}
+              </Link>
+            ))}
+          </nav>
+
+          <div className="pt-4 border-t border-border/50 flex flex-col space-y-3">
+            <div className="flex items-center justify-between px-4">
+              <span className="text-xs font-bold text-muted-foreground uppercase tracking-wider">
+                Settings
+              </span>
+              <ThemeToggle />
+            </div>
+
+            {loading ? (
+              <div className="h-20 w-full bg-muted/30 rounded-2xl animate-pulse" />
+            ) : user ? (
+              <div className="space-y-3">
+                <div className="flex items-center gap-3 p-3 bg-muted/30 rounded-2xl border border-border/50">
+                  <div className="w-10 h-10 rounded-full overflow-hidden border-2 border-primary/20">
+                    {user.image ? (
+                      <img
+                        src={user.image}
+                        alt={user.name}
+                        className="w-full h-full object-cover"
+                      />
+                    ) : (
+                      <div className="w-full h-full bg-primary/10 flex items-center justify-center text-xs font-black text-primary">
+                        {user.name
+                          ?.split(" ")
+                          .map((n: string) => n[0])
+                          .join("")}
+                      </div>
+                    )}
+                  </div>
+                  <div className="flex flex-col">
+                    <span className="text-sm font-bold">{user.name}</span>
+                    <span className="text-[10px] text-muted-foreground uppercase font-black tracking-tighter">
+                      {user.role}
+                    </span>
+                  </div>
+                </div>
+                <Link
+                  href={
+                    user.role === "superadmin" || user.role === "president"
+                      ? "/admin/dashboard"
+                      : "/dashboard"
+                  }
+                  className="block"
+                  onClick={() => setIsOpen(false)}
+                >
+                  <Button className="w-full rounded-xl font-bold bg-primary text-white">
+                    Open Dashboard
+                  </Button>
+                </Link>
+                <Button
+                  variant="outline"
+                  className="w-full rounded-xl font-bold text-destructive hover:text-destructive hover:bg-destructive/5"
+                  onClick={() => {
+                    logout();
+                    setIsOpen(false);
+                  }}
+                >
+                  Logout Account
+                </Button>
+              </div>
+            ) : (
+              <div className="grid grid-cols-2 gap-3 pb-2">
+                <Link
+                  href="/join?tab=login"
+                  className="w-full"
+                  onClick={() => setIsOpen(false)}
+                >
+                  <Button
+                    variant="outline"
+                    className="w-full rounded-xl font-bold"
+                  >
+                    Login
+                  </Button>
+                </Link>
+                <Link
+                  href="/join?tab=member"
+                  className="w-full"
+                  onClick={() => setIsOpen(false)}
+                >
+                  <Button className="w-full rounded-xl font-bold bg-primary text-white shadow-lg shadow-green-200/50">
+                    Join
+                  </Button>
+                </Link>
+              </div>
+            )}
           </div>
         </div>
       )}

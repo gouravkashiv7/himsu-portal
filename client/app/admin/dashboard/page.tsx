@@ -75,34 +75,24 @@ function AdminDashboardContent() {
   const userCount = Array.isArray(users) ? users.length : 0;
 
   return (
-    <div className="space-y-8 animate-in fade-in duration-500">
+    <div className="space-y-6 p-4 md:p-8 animate-in fade-in duration-500 max-w-[100vw] overflow-x-hidden">
       {/* Header Section */}
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
         <div>
-          <h1 className="text-4xl font-extrabold tracking-tight text-foreground">
+          <h1 className="text-2xl md:text-4xl font-extrabold tracking-tight text-foreground">
             Admin Dashboard
           </h1>
-          <p className="text-muted-foreground mt-1 text-lg">
+          <p className="text-muted-foreground mt-1 text-sm md:text-lg">
             Welcome back! Here&apos;s a look at the live status of HIMSU.
           </p>
-        </div>
-        <div className="flex gap-3">
-          <Button variant="outline" className="hidden sm:flex rounded-xl">
-            <Activity className="w-4 h-4 mr-2" />
-            System Logs
-          </Button>
-          <Button className="shadow-lg shadow-primary/20 rounded-xl px-6">
-            <Plus className="w-4 h-4 mr-2" />
-            Quick Action
-          </Button>
         </div>
       </div>
 
       {/* Stats Overview */}
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+      <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
         <Card className="border-none shadow-md bg-linear-to-br from-primary/10 to-transparent rounded-2xl">
           <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-bold uppercase tracking-wider text-muted-foreground">
+            <CardTitle className="text-xs md:text-sm font-bold uppercase tracking-wider text-muted-foreground">
               Total Colleges
             </CardTitle>
             <GraduationCap className="h-4 w-4 text-primary" />
@@ -111,7 +101,9 @@ function AdminDashboardContent() {
             {loadingColleges ? (
               <Loader2 className="h-6 w-6 animate-spin text-primary/50" />
             ) : (
-              <div className="text-3xl font-black">{colleges?.length || 0}</div>
+              <div className="text-2xl md:text-3xl font-black">
+                {colleges?.length || 0}
+              </div>
             )}
             <p className="text-[10px] text-muted-foreground mt-1 font-bold">
               {" "}
@@ -121,7 +113,7 @@ function AdminDashboardContent() {
         </Card>
         <Card className="border-none shadow-md bg-linear-to-br from-blue-500/10 to-transparent rounded-2xl">
           <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-bold uppercase tracking-wider text-muted-foreground">
+            <CardTitle className="text-xs md:text-sm font-bold uppercase tracking-wider text-muted-foreground">
               Active Users
             </CardTitle>
             <Users className="h-4 w-4 text-blue-500" />
@@ -130,7 +122,7 @@ function AdminDashboardContent() {
             {loadingUsers ? (
               <Loader2 className="h-6 w-6 animate-spin text-blue-500/50" />
             ) : (
-              <div className="text-3xl font-black">{userCount}</div>
+              <div className="text-2xl md:text-3xl font-black">{userCount}</div>
             )}
             <p className="text-[10px] text-muted-foreground mt-1 font-bold">
               Active community members
@@ -139,7 +131,7 @@ function AdminDashboardContent() {
         </Card>
         <Card className="border-none shadow-md bg-linear-to-br from-orange-500/10 to-transparent rounded-2xl">
           <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-bold uppercase tracking-wider text-muted-foreground">
+            <CardTitle className="text-xs md:text-sm font-bold uppercase tracking-wider text-muted-foreground">
               Announcements
             </CardTitle>
             <Megaphone className="h-4 w-4 text-orange-500" />
@@ -148,7 +140,7 @@ function AdminDashboardContent() {
             {loadingAnnouncements ? (
               <Loader2 className="h-6 w-6 animate-spin text-orange-500/50" />
             ) : (
-              <div className="text-3xl font-black">
+              <div className="text-2xl md:text-3xl font-black">
                 {announcements?.length || 0}
               </div>
             )}
@@ -159,7 +151,7 @@ function AdminDashboardContent() {
         </Card>
         <Card className="border-none shadow-md bg-linear-to-br from-purple-500/10 to-transparent rounded-2xl">
           <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-bold uppercase tracking-wider text-muted-foreground">
+            <CardTitle className="text-xs md:text-sm font-bold uppercase tracking-wider text-muted-foreground">
               Campus Team
             </CardTitle>
             <Activity className="h-4 w-4 text-purple-500" />
@@ -168,7 +160,9 @@ function AdminDashboardContent() {
             {loadingUsers ? (
               <Loader2 className="h-6 w-6 animate-spin text-purple-500/50" />
             ) : (
-              <div className="text-3xl font-black">{volunteerCount}</div>
+              <div className="text-2xl md:text-3xl font-black">
+                {volunteerCount}
+              </div>
             )}
             <p className="text-[10px] text-muted-foreground mt-1 font-bold">
               Help across campuses
@@ -179,17 +173,17 @@ function AdminDashboardContent() {
 
       {/* Management Tabs */}
       <Tabs value={activeTab} onValueChange={setTab} className="w-full">
-        <div className="flex items-center justify-between mb-6 bg-muted/30 p-1.5 rounded-xl border border-border/50 overflow-x-auto">
-          <TabsList className="bg-transparent border-none">
+        <div className="flex items-center mb-6 bg-muted/30 p-1 rounded-xl border border-border/50 overflow-x-auto no-scrollbar">
+          <TabsList className="bg-transparent border-none flex w-max gap-2 p-0 h-auto">
             <TabsTrigger
               value="colleges"
-              className="px-6 py-2.5 rounded-lg data-[state=active]:bg-background data-[state=active]:shadow-sm font-bold text-xs uppercase tracking-widest"
+              className="px-4 md:px-6 py-2 md:py-2.5 rounded-lg data-[state=active]:bg-background data-[state=active]:shadow-sm font-bold text-[10px] md:text-xs uppercase tracking-widest whitespace-nowrap"
             >
               {isSuperAdmin ? "Colleges" : "My College"}
             </TabsTrigger>
             <TabsTrigger
               value="users"
-              className="px-6 py-2.5 rounded-lg data-[state=active]:bg-background data-[state=active]:shadow-sm font-bold text-xs uppercase tracking-widest"
+              className="px-4 md:px-6 py-2 md:py-2.5 rounded-lg data-[state=active]:bg-background data-[state=active]:shadow-sm font-bold text-[10px] md:text-xs uppercase tracking-widest whitespace-nowrap"
             >
               Users
             </TabsTrigger>
@@ -197,13 +191,13 @@ function AdminDashboardContent() {
               <>
                 <TabsTrigger
                   value="announcements"
-                  className="px-6 py-2.5 rounded-lg data-[state=active]:bg-background data-[state=active]:shadow-sm font-bold text-xs uppercase tracking-widest"
+                  className="px-4 md:px-6 py-2 md:py-2.5 rounded-lg data-[state=active]:bg-background data-[state=active]:shadow-sm font-bold text-[10px] md:text-xs uppercase tracking-widest whitespace-nowrap"
                 >
                   Announcements
                 </TabsTrigger>
                 <TabsTrigger
                   value="roles"
-                  className="px-6 py-2.5 rounded-lg data-[state=active]:bg-background data-[state=active]:shadow-sm font-bold text-xs uppercase tracking-widest"
+                  className="px-4 md:px-6 py-2 md:py-2.5 rounded-lg data-[state=active]:bg-background data-[state=active]:shadow-sm font-bold text-[10px] md:text-xs uppercase tracking-widest whitespace-nowrap"
                 >
                   Roles
                 </TabsTrigger>

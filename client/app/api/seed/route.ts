@@ -1,25 +1,30 @@
 import { NextRequest, NextResponse } from "next/server";
 import dbConnect from "@/lib/db";
 import User from "@/lib/models/User";
-import bcrypt from "bcrypt";
+import bcrypt from "bcryptjs";
 
 export async function GET() {
   await dbConnect();
 
   try {
     const existingAdmin = await User.findOne({ role: "superadmin" });
+    const hashedPassword = await bcrypt.hash("admin123", 10);
+
     if (existingAdmin) {
+      existingAdmin.password = hashedPassword;
+      await existingAdmin.save();
       return NextResponse.json(
-        { message: "Superadmin already exists", email: existingAdmin.email },
+        {
+          message: "Superadmin password reset to 'admin123'",
+          email: existingAdmin.email,
+        },
         { status: 200 },
       );
     }
 
-    const hashedPassword = await bcrypt.hash("admin123", 10);
-
     const admin = await User.create({
       name: "Super Admin",
-      email: "admin@himsu.com",
+      email: "admin@himsu.com".toLowerCase(),
       password: hashedPassword,
       role: "superadmin",
     });
