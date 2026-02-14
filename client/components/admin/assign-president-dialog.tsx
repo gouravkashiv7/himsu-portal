@@ -10,19 +10,26 @@ import { toast } from "react-hot-toast";
 import * as Dialog from "@radix-ui/react-dialog";
 import { X } from "lucide-react";
 
-const schema = z.object({
+import { Button } from "@/components/ui/button";
+
+// Schema for type inference
+const baseSchema = z.object({
   name: z.string().min(2, "Name is required"),
   email: z.string().email("Invalid email"),
-  password: z.string().min(6, "Password must be at least 6 characters"),
+  password: z.string().optional(),
 });
 
-type FormData = z.infer<typeof schema>;
+type FormData = z.infer<typeof baseSchema>;
 
 interface AssignPresidentDialogProps {
   collegeId: string;
   collegeName: string;
   trigger?: React.ReactNode;
   onSuccess?: () => void;
+  isEdit?: boolean;
+  currentPresidentId?: string;
+  currentPresidentEmail?: string;
+  currentPresidentName?: string;
 }
 
 export function AssignPresidentDialog({
@@ -30,9 +37,22 @@ export function AssignPresidentDialog({
   collegeName,
   trigger,
   onSuccess,
+  isEdit = false,
+  currentPresidentId,
+  currentPresidentEmail,
+  currentPresidentName,
 }: AssignPresidentDialogProps) {
   const [open, setOpen] = useState(false);
   const queryClient = useQueryClient();
+
+  // Dynamic schema: password optional if editing
+  const formSchema = z.object({
+    name: z.string().min(2, "Name is required"),
+    email: z.string().email("Invalid email"),
+    password: isEdit
+      ? z.string().optional().or(z.literal(""))
+      : z.string().min(6, "Password must be at least 6 characters"),
+  });
 
   const {
     register,
@@ -40,7 +60,14 @@ export function AssignPresidentDialog({
     reset,
     formState: { errors },
   } = useForm<FormData>({
-    resolver: zodResolver(schema),
+    resolver: zodResolver(formSchema),
+    defaultValues: isEdit
+      ? {
+          name: currentPresidentName || "",
+          email: currentPresidentEmail || "",
+          password: "",
+        }
+      : undefined,
   });
 
   const mutation = useMutation({
@@ -48,11 +75,17 @@ export function AssignPresidentDialog({
       const response = await axios.post("/api/admin/assign-president", {
         collegeId,
         ...data,
+        isUpdate: isEdit,
+        previousPresidentId: currentPresidentId,
       });
       return response.data;
     },
     onSuccess: () => {
-      toast.success("President assigned successfully!");
+      toast.success(
+        isEdit
+          ? "President updated successfully!"
+          : "President assigned successfully!",
+      );
       setOpen(false);
       reset();
       queryClient.invalidateQueries({ queryKey: ["colleges"] });
@@ -70,21 +103,32 @@ export function AssignPresidentDialog({
   return (
     <Dialog.Root open={open} onOpenChange={setOpen}>
       <Dialog.Trigger asChild>
-        {trigger || (
-          <button className="bg-primary text-primary-foreground px-4 py-2 rounded-md hover:opacity-90 transition-opacity">
-            Assign President
-          </button>
-        )}
+        {trigger ||
+          (isEdit ? (
+            <Button
+              variant="ghost"
+              size="sm"
+              className="h-8 text-xs font-bold text-primary hover:text-primary hover:bg-primary/10"
+            >
+              Edit
+            </Button>
+          ) : (
+            <button className="bg-primary text-primary-foreground px-4 py-2 rounded-md hover:opacity-90 transition-opacity">
+              Assign President
+            </button>
+          ))}
       </Dialog.Trigger>
       <Dialog.Portal>
         <Dialog.Overlay className="fixed inset-0 bg-black/50 backdrop-blur-sm data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 z-50" />
         <Dialog.Content className="fixed left-[50%] top-[50%] z-50 grid w-full max-w-lg translate-x-[-50%] translate-y-[-50%] gap-4 border bg-background p-6 shadow-lg duration-200 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[state=closed]:slide-out-to-left-1/2 data-[state=closed]:slide-out-to-top-[48%] data-[state=open]:slide-in-from-left-1/2 data-[state=open]:slide-in-from-top-[48%] sm:rounded-lg">
           <div className="flex flex-col space-y-1.5 text-center sm:text-left">
             <Dialog.Title className="text-lg font-semibold leading-none tracking-tight">
-              Assign President
+              {isEdit ? "Update President" : "Assign President"}
             </Dialog.Title>
             <Dialog.Description className="text-sm text-muted-foreground">
-              Create a new user and assign as president for{" "}
+              {isEdit
+                ? "Modify the assigned president details for "
+                : "Create a new user and assign as president for "}
               <span className="font-semibold text-foreground">
                 {collegeName}
               </span>
@@ -166,7 +210,13 @@ export function AssignPresidentDialog({
                 disabled={mutation.isPending}
                 className="bg-primary text-primary-foreground hover:bg-primary/90 inline-flex h-10 items-center justify-center rounded-md px-4 py-2 text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50"
               >
-                {mutation.isPending ? "Assigning..." : "Create & Assign"}
+                {mutation.isPending
+                  ? isEdit
+                    ? "Updating..."
+                    : "Assigning..."
+                  : isEdit
+                    ? "Update President"
+                    : "Create & Assign"}
               </button>
             </div>
           </form>

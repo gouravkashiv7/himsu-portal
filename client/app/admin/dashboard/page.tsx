@@ -5,6 +5,7 @@ import axios from "axios";
 import { CollegeManagement } from "@/components/admin/college-management";
 import { AnnouncementManagement } from "@/components/admin/announcement-management";
 import { UserManagement } from "@/components/admin/user-management";
+import UserDashboard from "@/components/dashboard/user-dashboard";
 import {
   GraduationCap,
   Users,
@@ -31,17 +32,28 @@ import { useAuth } from "@/hooks/use-auth";
 import { Suspense, useEffect, useState } from "react";
 
 function AdminDashboardContent() {
-  const { user } = useAuth();
+  const { user, loading } = useAuth();
   const isSuperAdmin = user?.role === "superadmin";
   const searchParams = useSearchParams();
   const router = useRouter();
   const activeTab = searchParams.get("tab") || "colleges";
+
+  useEffect(() => {
+    if (!loading) {
+      if (!user || (user.role !== "superadmin" && user.role !== "president")) {
+        router.push("/dashboard");
+      }
+    }
+  }, [user, loading, router]);
 
   const setTab = (value: string) => {
     const params = new URLSearchParams(searchParams.toString());
     params.set("tab", value);
     router.replace(`?${params.toString()}`);
   };
+
+  const canAccess =
+    user && (user.role === "superadmin" || user.role === "president");
 
   // Fetch real statistics
   const { data: colleges, isLoading: loadingColleges } = useQuery({
@@ -50,6 +62,7 @@ function AdminDashboardContent() {
       const res = await axios.get("/api/admin/colleges");
       return res.data.data;
     },
+    enabled: !!canAccess,
   });
 
   const { data: users, isLoading: loadingUsers } = useQuery({
@@ -59,6 +72,7 @@ function AdminDashboardContent() {
       // Fallback for user list structure if needed
       return res.data.data || res.data;
     },
+    enabled: !!canAccess,
   });
 
   const { data: announcements, isLoading: loadingAnnouncements } = useQuery({
@@ -67,7 +81,20 @@ function AdminDashboardContent() {
       const res = await axios.get("/api/announcements");
       return res.data.data;
     },
+    enabled: !!canAccess,
   });
+
+  if (loading) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-[60vh] space-y-4">
+        <Loader2 className="h-10 w-10 animate-spin text-primary opacity-20" />
+      </div>
+    );
+  }
+
+  if (!canAccess) {
+    return null;
+  }
 
   const volunteerCount = Array.isArray(users)
     ? users.filter((u: any) => u.isCampusVolunteer).length
@@ -89,83 +116,63 @@ function AdminDashboardContent() {
       </div>
 
       {/* Stats Overview */}
-      <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
-        <Card className="border-none shadow-md bg-linear-to-br from-primary/10 to-transparent rounded-2xl">
-          <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-xs md:text-sm font-bold uppercase tracking-wider text-muted-foreground">
+      {/* Stats Overview */}
+      <div className="grid gap-3 grid-cols-2 md:grid-cols-3">
+        <Card className="border-none shadow-md bg-linear-to-br from-primary/10 to-transparent rounded-xl">
+          <CardHeader className="flex flex-row items-center justify-between pb-1 p-4">
+            <CardTitle className="text-[10px] md:text-sm font-bold uppercase tracking-wider text-muted-foreground truncate">
               Total Colleges
             </CardTitle>
-            <GraduationCap className="h-4 w-4 text-primary" />
+            <GraduationCap className="h-3 w-3 md:h-4 md:w-4 text-primary" />
           </CardHeader>
-          <CardContent>
+          <CardContent className="p-4 pt-0">
             {loadingColleges ? (
-              <Loader2 className="h-6 w-6 animate-spin text-primary/50" />
+              <Loader2 className="h-4 w-4 md:h-6 md:w-6 animate-spin text-primary/50" />
             ) : (
-              <div className="text-2xl md:text-3xl font-black">
+              <div className="text-xl md:text-3xl font-black">
                 {colleges?.length || 0}
               </div>
             )}
-            <p className="text-[10px] text-muted-foreground mt-1 font-bold">
-              {" "}
+            <p className="text-[8px] md:text-[10px] text-muted-foreground mt-1 font-bold truncate">
               Registered institutions
             </p>
           </CardContent>
         </Card>
-        <Card className="border-none shadow-md bg-linear-to-br from-blue-500/10 to-transparent rounded-2xl">
-          <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-xs md:text-sm font-bold uppercase tracking-wider text-muted-foreground">
+        <Card className="border-none shadow-md bg-linear-to-br from-blue-500/10 to-transparent rounded-xl">
+          <CardHeader className="flex flex-row items-center justify-between pb-1 p-4">
+            <CardTitle className="text-[10px] md:text-sm font-bold uppercase tracking-wider text-muted-foreground truncate">
               Active Users
             </CardTitle>
-            <Users className="h-4 w-4 text-blue-500" />
+            <Users className="h-3 w-3 md:h-4 md:w-4 text-blue-500" />
           </CardHeader>
-          <CardContent>
+          <CardContent className="p-4 pt-0">
             {loadingUsers ? (
-              <Loader2 className="h-6 w-6 animate-spin text-blue-500/50" />
+              <Loader2 className="h-4 w-4 md:h-6 md:w-6 animate-spin text-blue-500/50" />
             ) : (
-              <div className="text-2xl md:text-3xl font-black">{userCount}</div>
+              <div className="text-xl md:text-3xl font-black">{userCount}</div>
             )}
-            <p className="text-[10px] text-muted-foreground mt-1 font-bold">
+            <p className="text-[8px] md:text-[10px] text-muted-foreground mt-1 font-bold truncate">
               Active community members
             </p>
           </CardContent>
         </Card>
-        <Card className="border-none shadow-md bg-linear-to-br from-orange-500/10 to-transparent rounded-2xl">
-          <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-xs md:text-sm font-bold uppercase tracking-wider text-muted-foreground">
-              Announcements
+        <Card className="border-none shadow-md bg-linear-to-br from-orange-500/10 to-transparent rounded-xl">
+          <CardHeader className="flex flex-row items-center justify-between pb-1 p-4">
+            <CardTitle className="text-[10px] md:text-sm font-bold uppercase tracking-wider text-muted-foreground truncate">
+              Ann Announcements
             </CardTitle>
-            <Megaphone className="h-4 w-4 text-orange-500" />
+            <Megaphone className="h-3 w-3 md:h-4 md:w-4 text-orange-500" />
           </CardHeader>
-          <CardContent>
+          <CardContent className="p-4 pt-0">
             {loadingAnnouncements ? (
-              <Loader2 className="h-6 w-6 animate-spin text-orange-500/50" />
+              <Loader2 className="h-4 w-4 md:h-6 md:w-6 animate-spin text-orange-500/50" />
             ) : (
-              <div className="text-2xl md:text-3xl font-black">
+              <div className="text-xl md:text-3xl font-black">
                 {announcements?.length || 0}
               </div>
             )}
-            <p className="text-[10px] text-muted-foreground mt-1 font-bold">
+            <p className="text-[8px] md:text-[10px] text-muted-foreground mt-1 font-bold truncate">
               Active broadcasts
-            </p>
-          </CardContent>
-        </Card>
-        <Card className="border-none shadow-md bg-linear-to-br from-purple-500/10 to-transparent rounded-2xl">
-          <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-xs md:text-sm font-bold uppercase tracking-wider text-muted-foreground">
-              Campus Team
-            </CardTitle>
-            <Activity className="h-4 w-4 text-purple-500" />
-          </CardHeader>
-          <CardContent>
-            {loadingUsers ? (
-              <Loader2 className="h-6 w-6 animate-spin text-purple-500/50" />
-            ) : (
-              <div className="text-2xl md:text-3xl font-black">
-                {volunteerCount}
-              </div>
-            )}
-            <p className="text-[10px] text-muted-foreground mt-1 font-bold">
-              Help across campuses
             </p>
           </CardContent>
         </Card>
@@ -187,14 +194,22 @@ function AdminDashboardContent() {
             >
               Users
             </TabsTrigger>
+            <TabsTrigger
+              value="announcements"
+              className="px-4 md:px-6 py-2 md:py-2.5 rounded-lg data-[state=active]:bg-background data-[state=active]:shadow-sm font-bold text-[10px] md:text-xs uppercase tracking-widest whitespace-nowrap"
+            >
+              Announcements
+            </TabsTrigger>
+            {!isSuperAdmin && (
+              <TabsTrigger
+                value="profile"
+                className="px-4 md:px-6 py-2 md:py-2.5 rounded-lg data-[state=active]:bg-background data-[state=active]:shadow-sm font-bold text-[10px] md:text-xs uppercase tracking-widest whitespace-nowrap"
+              >
+                My Profile
+              </TabsTrigger>
+            )}
             {isSuperAdmin && (
               <>
-                <TabsTrigger
-                  value="announcements"
-                  className="px-4 md:px-6 py-2 md:py-2.5 rounded-lg data-[state=active]:bg-background data-[state=active]:shadow-sm font-bold text-[10px] md:text-xs uppercase tracking-widest whitespace-nowrap"
-                >
-                  Announcements
-                </TabsTrigger>
                 <TabsTrigger
                   value="roles"
                   className="px-4 md:px-6 py-2 md:py-2.5 rounded-lg data-[state=active]:bg-background data-[state=active]:shadow-sm font-bold text-[10px] md:text-xs uppercase tracking-widest whitespace-nowrap"
@@ -273,6 +288,15 @@ function AdminDashboardContent() {
             <CardContent className="p-0 sm:p-6">
               <RoleManagement />
             </CardContent>
+          </Card>
+        </TabsContent>
+
+        <TabsContent
+          value="profile"
+          className="mt-0 focus-visible:outline-none"
+        >
+          <Card className="border-none shadow-xl shadow-black/5 rounded-3xl overflow-hidden bg-transparent">
+            <UserDashboard />
           </Card>
         </TabsContent>
       </Tabs>

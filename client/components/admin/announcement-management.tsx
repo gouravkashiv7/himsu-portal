@@ -22,9 +22,19 @@ interface Announcement {
   text: string;
   link?: string;
   isActive: boolean;
+  author?: {
+    _id: string;
+    name: string;
+  };
 }
 
+import { useAuth } from "@/hooks/use-auth";
+import { cn } from "@/lib/utils";
+
 export function AnnouncementManagement() {
+  const { user } = useAuth();
+  const isSuperAdmin = user?.role === "superadmin";
+
   const queryClient = useQueryClient();
   const [newText, setNewText] = useState("");
   const [newLink, setNewLink] = useState("");
@@ -173,13 +183,26 @@ export function AnnouncementManagement() {
                       {item.link}
                     </a>
                   )}
+                  {item.author && (
+                    <p className="text-[9px] text-muted-foreground mt-2 font-medium bg-muted/30 px-2 py-1 rounded w-fit">
+                      Posted by: {item.author.name}
+                    </p>
+                  )}
                 </div>
                 <Button
                   variant="ghost"
                   size="icon"
-                  className="text-destructive hover:bg-destructive/10 hover:text-destructive shrink-0 rounded-xl h-10 w-10 opacity-0 group-hover:opacity-100 transition-opacity"
+                  className={cn(
+                    "hover:bg-destructive/10 hover:text-destructive shrink-0 rounded-xl h-10 w-10 transition-opacity",
+                    !isSuperAdmin && item.author?._id !== user?.id
+                      ? "opacity-20 cursor-not-allowed text-muted-foreground hover:bg-transparent hover:text-muted-foreground"
+                      : "text-destructive opacity-0 group-hover:opacity-100",
+                  )}
                   onClick={() => deleteMutation.mutate(item._id)}
-                  disabled={deleteMutation.isPending}
+                  disabled={
+                    deleteMutation.isPending ||
+                    (!isSuperAdmin && item.author?._id !== user?.id)
+                  }
                 >
                   <Trash2 className="h-4 w-4" />
                 </Button>

@@ -178,13 +178,14 @@ export function CollegeManagement() {
                         />
                       ) : (
                         <div className="flex justify-end gap-2">
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            className="h-8 text-xs font-bold text-primary hover:text-primary hover:bg-primary/10"
-                          >
-                            Edit
-                          </Button>
+                          <AssignPresidentDialog
+                            collegeId={college._id}
+                            collegeName={college.name}
+                            currentPresidentId={college.president?._id}
+                            currentPresidentName={college.president?.name}
+                            currentPresidentEmail={college.president?.email}
+                            isEdit={true}
+                          />
                           <Badge
                             variant="outline"
                             className="h-8 px-3 bg-green-500/5 text-green-600 border-green-200"

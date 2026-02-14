@@ -71,6 +71,7 @@ export default function UserDashboard() {
     if (profile) {
       setEditForm({
         name: profile.name,
+        email: profile.email,
         phone: profile.phone || "",
         bloodGroup: profile.bloodGroup || "Unknown",
         isBloodDonor: profile.isBloodDonor || false,
@@ -180,7 +181,7 @@ export default function UserDashboard() {
           {/* Profile Picture Section */}
           <div className="relative group mx-auto md:mx-0">
             <div
-              className={`w-24 h-24 md:w-32 md:h-32 rounded-[2rem] md:rounded-[2.5rem] overflow-hidden border-4 ${profile?.role === "unverified" ? "border-muted" : "border-primary/20"} shadow-2xl relative transition-all`}
+              className={`w-24 h-24 md:w-32 md:h-32 rounded-4xl md:rounded-[2.5rem] overflow-hidden border-4 ${profile?.role === "unverified" ? "border-muted" : "border-primary/20"} shadow-2xl relative transition-all`}
             >
               {profile?.image || editForm?.image ? (
                 <img
@@ -280,6 +281,20 @@ export default function UserDashboard() {
               Discard
             </Button>
             <Button
+              variant="destructive"
+              onClick={() => {
+                setEditForm({
+                  ...profile,
+                  college: profile?.college?._id || "",
+                  location: profile?.location || { city: "", sector: "" },
+                });
+                toast.success("Fields reset to original");
+              }}
+              className="flex-1 md:flex-none rounded-xl md:rounded-2xl h-12 md:h-14 px-6 md:px-8 font-bold shadow-xl shadow-destructive/20"
+            >
+              Reset
+            </Button>
+            <Button
               onClick={handleSave}
               disabled={updateProfileMutation.isPending}
               className="flex-1 md:flex-none rounded-xl md:rounded-2xl h-12 md:h-14 px-6 md:px-8 font-bold shadow-xl shadow-primary/20"
@@ -370,7 +385,9 @@ export default function UserDashboard() {
                   </span>
                 </div>
                 <span className="text-sm font-black">
-                  {new Date(profile?.createdAt).toLocaleDateString()}
+                  {new Date(
+                    profile?.createdAt || new Date().toISOString(),
+                  ).toLocaleDateString()}
                 </span>
               </div>
               <div className="flex items-center justify-between p-4 rounded-2xl bg-background/50 border border-border/50">
@@ -426,10 +443,22 @@ export default function UserDashboard() {
                   <label className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground/60 ml-1">
                     Email Address
                   </label>
-                  <div className="flex items-center gap-3 h-12 px-5 rounded-2xl bg-muted/5 border border-border/30 opacity-70">
-                    <Mail className="w-4 h-4 text-muted-foreground" />
-                    <span className="text-sm font-bold">{profile?.email}</span>
-                  </div>
+                  {isEditing ? (
+                    <Input
+                      value={editForm.email}
+                      onChange={(e) =>
+                        handleInputChange("email", e.target.value)
+                      }
+                      className="rounded-2xl h-12 bg-muted/30"
+                    />
+                  ) : (
+                    <div className="flex items-center gap-3 h-12 px-5 rounded-2xl bg-muted/10 border border-dashed border-border/50 opacity-70">
+                      <Mail className="w-4 h-4 text-muted-foreground" />
+                      <span className="text-sm font-bold">
+                        {profile?.email}
+                      </span>
+                    </div>
+                  )}
                 </div>
 
                 <div className="space-y-2">

@@ -15,15 +15,32 @@ export async function GET(req: NextRequest) {
       );
     }
 
-    const authUser = JSON.parse(authUserCookie.value);
+    let jsonString = authUserCookie.value;
+    try {
+      jsonString = decodeURIComponent(authUserCookie.value);
+    } catch (e) {
+      jsonString = authUserCookie.value;
+    }
+    const authUser = JSON.parse(jsonString);
     const authRole = authRoleCookie.value;
+
+    if (authRole !== "superadmin" && authRole !== "president") {
+      return NextResponse.json(
+        { success: false, message: "Forbidden: Access denied" },
+        { status: 403 },
+      );
+    }
 
     let query: any = {};
     if (authRole === "president") {
-      if (!authUser.college) {
+      // Fetch fresh user data to get the college ID reliably
+      const User = (await import("@/lib/models/User")).default;
+      const freshUser = await User.findById(authUser.id);
+
+      if (!freshUser || !freshUser.college) {
         return NextResponse.json({ success: true, data: [] });
       }
-      query._id = authUser.college;
+      query._id = freshUser.college;
     }
 
     const colleges = await College.find(query).populate(

@@ -16,8 +16,21 @@ export async function GET(req: NextRequest) {
       );
     }
 
-    const authUser = JSON.parse(authUserCookie.value);
+    let jsonString = authUserCookie.value;
+    try {
+      jsonString = decodeURIComponent(authUserCookie.value);
+    } catch (e) {
+      jsonString = authUserCookie.value;
+    }
+    const authUser = JSON.parse(jsonString);
     const authRole = authRoleCookie.value;
+
+    if (authRole !== "superadmin" && authRole !== "president") {
+      return NextResponse.json(
+        { success: false, message: "Forbidden: Access denied" },
+        { status: 403 },
+      );
+    }
 
     let query: any = {
       role: {
@@ -26,11 +39,13 @@ export async function GET(req: NextRequest) {
     };
 
     // If president, filter by their college
+    // If president, filter by their college
     if (authRole === "president") {
-      if (!authUser.college) {
+      const freshUser = await User.findById(authUser.id);
+      if (!freshUser || !freshUser.college) {
         return NextResponse.json({ success: true, data: [] });
       }
-      query.college = authUser.college;
+      query.college = freshUser.college;
     }
 
     const users = await User.find(query)

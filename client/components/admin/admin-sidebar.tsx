@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useSearchParams } from "next/navigation";
 import { cn } from "@/lib/utils";
 import {
   LayoutDashboard,
@@ -17,41 +17,58 @@ import { useAuth } from "@/hooks/use-auth";
 
 export function AdminSidebar() {
   const pathname = usePathname();
+  const searchParams = useSearchParams();
   const { user } = useAuth();
   const isSuperAdmin = user?.role === "superadmin";
   const isPresident = user?.role === "president";
+  const currentTab = searchParams.get("tab");
 
   const menuItems = [
     {
       title: "Dashboard",
       href: "/admin/dashboard",
       icon: LayoutDashboard,
+      active: !currentTab, // Active if no tab param
     },
     {
       title: isSuperAdmin ? "Manage Colleges" : "My College",
       href: "/admin/dashboard?tab=colleges",
       icon: GraduationCap,
+      active: currentTab === "colleges",
     },
     {
       title: "User Directory",
       href: "/admin/dashboard?tab=users",
       icon: Users,
+      active: currentTab === "users",
     },
   ];
 
+  if (isSuperAdmin || isPresident) {
+    menuItems.push({
+      title: "Announcements",
+      href: "/admin/dashboard?tab=announcements",
+      icon: Megaphone,
+      active: currentTab === "announcements",
+    });
+  }
+
   if (isSuperAdmin) {
-    menuItems.push(
-      {
-        title: "Roles & Permissions",
-        href: "/admin/dashboard?tab=roles",
-        icon: Shield,
-      },
-      {
-        title: "Announcements",
-        href: "/admin/dashboard?tab=announcements",
-        icon: Megaphone,
-      },
-    );
+    menuItems.push({
+      title: "Roles & Permissions",
+      href: "/admin/dashboard?tab=roles",
+      icon: Shield,
+      active: currentTab === "roles",
+    });
+  }
+
+  if (isPresident) {
+    menuItems.push({
+      title: "My Profile",
+      href: "/admin/dashboard?tab=profile",
+      icon: Users,
+      active: currentTab === "profile",
+    });
   }
 
   return (
@@ -67,7 +84,8 @@ export function AdminSidebar() {
 
       <nav className="flex-1 px-4 space-y-2 py-4">
         {menuItems.map((item) => {
-          const isActive = pathname === item.href;
+          const isActive =
+            item.active !== undefined ? item.active : pathname === item.href;
           return (
             <Link
               key={item.title}

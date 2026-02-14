@@ -138,8 +138,6 @@ export function UserManagement() {
     let matchesTab = true;
     if (activeTab === "donors") {
       matchesTab = u.isBloodDonor;
-    } else if (activeTab === "campus") {
-      matchesTab = u.isCampusVolunteer;
     } else if (activeTab !== "all") {
       matchesTab = u.role === activeTab;
     }
@@ -260,9 +258,6 @@ export function UserManagement() {
             </TabsTrigger>
             <TabsTrigger value="donors" className="rounded-lg text-xs px-4">
               Donors
-            </TabsTrigger>
-            <TabsTrigger value="campus" className="rounded-lg text-xs px-4">
-              Campus Team
             </TabsTrigger>
           </TabsList>
         </Tabs>
@@ -395,7 +390,9 @@ export function UserManagement() {
                       )}
                     </td>
                     <td className="p-6 align-middle">
-                      {canManageUser(user) ? (
+                      {canManageUser(user) &&
+                      user.role !== "president" &&
+                      user.role !== "superadmin" ? (
                         <div className="flex flex-col items-start gap-1">
                           <select
                             value={user.role}

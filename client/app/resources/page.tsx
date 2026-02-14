@@ -1,5 +1,7 @@
+"use client";
+
 import Link from "next/link";
-import { FileText, Book, Video, ArrowRight } from "lucide-react";
+import { FileText, Book, ArrowRight } from "lucide-react";
 import {
   Card,
   CardContent,
@@ -7,6 +9,9 @@ import {
   CardTitle,
   CardDescription,
 } from "@/components/ui/card";
+import { useAuth } from "@/hooks/use-auth";
+import { useRouter } from "next/navigation";
+import { toast } from "react-hot-toast";
 
 const categories = [
   {
@@ -14,7 +19,7 @@ const categories = [
     description:
       "Access exam papers from the last 10 years for all major courses.",
     icon: FileText,
-    href: "/resources/pyq",
+    href: "#",
     color: "bg-blue-500/10 text-blue-600",
     hover: "hover:border-blue-500/50",
   },
@@ -23,22 +28,41 @@ const categories = [
     description:
       "Curated study material, handwritten notes, and PDF summaries.",
     icon: Book,
-    href: "/resources/notes",
+    href: "#",
     color: "bg-green-500/10 text-green-600",
     hover: "hover:border-green-500/50",
-  },
-  {
-    title: "Video Lectures",
-    description:
-      "Topic-wise video tutorials and curated playlists for difficult subjects.",
-    icon: Video,
-    href: "/resources/videos",
-    color: "bg-red-500/10 text-red-600",
-    hover: "hover:border-red-500/50",
   },
 ];
 
 export default function ResourcesPage() {
+  const { user } = useAuth();
+  const router = useRouter();
+
+  const handleUpload = () => {
+    if (!user) {
+      toast.error("Please login to upload resources");
+      router.push("/login");
+      return;
+    }
+
+    if (user.role === "member") {
+      toast("Feature Coming Soon", {
+        icon: "🚧",
+        style: {
+          borderRadius: "10px",
+          background: "#333",
+          color: "#fff",
+        },
+      });
+      return;
+    }
+
+    // For other roles (admins/presidents), potentially allow or show standard message
+    toast("Upload feature is currently under maintenance for admins.", {
+      icon: "info",
+    });
+  };
+
   return (
     <div className="container mx-auto px-4 py-12 min-h-[80vh]">
       <div className="text-center max-w-2xl mx-auto mb-16">
@@ -51,11 +75,11 @@ export default function ResourcesPage() {
         </p>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
         {categories.map((category) => (
-          <Link key={category.title} href={category.href} className="group">
+          <div key={category.title} className="group cursor-not-allowed">
             <Card
-              className={`h-full transition-all duration-300 border-2 border-transparent shadow-sm hover:shadow-xl ${category.hover}`}
+              className={`h-full transition-all duration-300 border-2 border-transparent shadow-sm opacity-80 ${category.hover}`}
             >
               <CardHeader>
                 <div
@@ -69,13 +93,12 @@ export default function ResourcesPage() {
                 </CardDescription>
               </CardHeader>
               <CardContent>
-                <div className="flex items-center text-sm font-medium text-muted-foreground group-hover:text-primary transition-colors">
-                  Browse Collection{" "}
-                  <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
+                <div className="flex items-center text-sm font-bold text-muted-foreground bg-muted/20 px-3 py-1 rounded-full w-fit">
+                  Coming Soon
                 </div>
               </CardContent>
             </Card>
-          </Link>
+          </div>
         ))}
       </div>
 
@@ -87,7 +110,10 @@ export default function ResourcesPage() {
         <p className="text-muted-foreground mb-6 max-w-lg mx-auto">
           Help your juniors by uploading your notes or question papers.
         </p>
-        <button className="bg-primary text-primary-foreground px-6 py-2.5 rounded-full font-medium hover:bg-primary/90 transition-colors">
+        <button
+          onClick={handleUpload}
+          className="bg-primary text-primary-foreground px-6 py-2.5 rounded-full font-medium hover:bg-primary/90 transition-colors shadow-lg hover:shadow-xl hover:-translate-y-0.5 active:translate-y-0"
+        >
           Upload Resource
         </button>
       </div>

@@ -61,6 +61,7 @@ export async function PATCH(req: NextRequest) {
     // Only allow specific fields to be updated by the user themselves
     const allowedUpdates = [
       "name",
+      "email",
       "phone",
       "image",
       "bloodGroup",
@@ -98,6 +99,7 @@ export async function PATCH(req: NextRequest) {
         id: user._id,
         name: user.name,
         role: user.role,
+        college: user.college?._id || user.college,
       }),
       {
         httpOnly: false,
