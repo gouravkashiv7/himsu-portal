@@ -28,7 +28,9 @@ import { useSearchParams, useRouter } from "next/navigation";
 import { RoleManagement } from "@/components/admin/role-management";
 import { useAuth } from "@/hooks/use-auth";
 
-export default function AdminDashboard() {
+import { Suspense, useEffect, useState } from "react";
+
+function AdminDashboardContent() {
   const { user } = useAuth();
   const isSuperAdmin = user?.role === "superadmin";
   const searchParams = useSearchParams();
@@ -281,5 +283,22 @@ export default function AdminDashboard() {
         </TabsContent>
       </Tabs>
     </div>
+  );
+}
+
+export default function AdminDashboard() {
+  return (
+    <Suspense
+      fallback={
+        <div className="flex flex-col items-center justify-center min-h-[60vh] space-y-4">
+          <Loader2 className="h-10 w-10 animate-spin text-primary opacity-20" />
+          <p className="text-xs font-black uppercase tracking-widest text-muted-foreground/40">
+            Initializing Admin Systems...
+          </p>
+        </div>
+      }
+    >
+      <AdminDashboardContent />
+    </Suspense>
   );
 }

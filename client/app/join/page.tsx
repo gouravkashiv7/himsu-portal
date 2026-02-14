@@ -5,7 +5,9 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { LoginForm, RegisterForm } from "@/components/auth";
 import { Navbar } from "@/components/layout/navbar";
 
-export default function JoinPage() {
+import { Suspense } from "react";
+
+function JoinPageContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const currentTab = searchParams.get("tab") || "member";
@@ -78,5 +80,22 @@ export default function JoinPage() {
         </div>
       </main>
     </div>
+  );
+}
+
+export default function JoinPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="min-h-screen bg-background flex flex-col items-center justify-center space-y-4">
+          <div className="w-10 h-10 rounded-full border-4 border-primary border-t-transparent animate-spin" />
+          <p className="text-sm font-black uppercase tracking-widest text-muted-foreground animate-pulse">
+            Configuring Entry Portal...
+          </p>
+        </div>
+      }
+    >
+      <JoinPageContent />
+    </Suspense>
   );
 }
