@@ -37,18 +37,13 @@ import {
 } from "@/components/ui/card";
 
 export default function UserDashboard() {
-  const { user: authUser, loading: authLoading } = useAuth();
+  const { user: authUser, loading: authLoading, checkAuth } = useAuth();
   const queryClient = useQueryClient();
   const [isEditing, setIsEditing] = useState(false);
   const [editForm, setEditForm] = useState<any>(null);
 
-  const { data: profile, isLoading: isProfileLoading } = useQuery({
-    queryKey: ["profile"],
-    queryFn: async () => {
-      const res = await axios.get("/api/profile");
-      return res.data.data;
-    },
-  });
+  // Use authUser immediately if available to reduce loading perception
+  const profile = authUser;
 
   const { data: colleges } = useQuery({
     queryKey: ["colleges-list"],
@@ -62,10 +57,10 @@ export default function UserDashboard() {
     mutationFn: async (data: any) => {
       await axios.patch("/api/profile", data);
     },
-    onSuccess: () => {
+    onSuccess: async () => {
       toast.success("Profile updated successfully");
       setIsEditing(false);
-      queryClient.invalidateQueries({ queryKey: ["profile"] });
+      await checkAuth(); // Refresh global auth state
     },
     onError: (err: any) => {
       toast.error(err.response?.data?.message || "Failed to update profile");
@@ -121,7 +116,7 @@ export default function UserDashboard() {
     reader.readAsDataURL(file);
   };
 
-  if (authLoading || isProfileLoading) {
+  if (authLoading) {
     return (
       <div className="flex flex-col items-center justify-center min-h-[60vh] space-y-4">
         <Loader2 className="h-12 w-12 animate-spin text-primary/50" />
@@ -178,14 +173,14 @@ export default function UserDashboard() {
   };
 
   return (
-    <div className="container mx-auto max-w-5xl py-12 px-4 animate-in fade-in slide-in-from-bottom-4 duration-700">
+    <div className="container mx-auto max-w-5xl py-6 md:py-12 px-4 md:px-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
       {/* Welcome Header */}
-      <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12">
-        <div className="flex flex-col md:flex-row gap-8 items-start md:items-center">
+      <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-8 md:mb-12">
+        <div className="flex flex-col md:flex-row gap-6 md:gap-8 items-start md:items-center w-full">
           {/* Profile Picture Section */}
-          <div className="relative group">
+          <div className="relative group mx-auto md:mx-0">
             <div
-              className={`w-32 h-32 rounded-[2.5rem] overflow-hidden border-4 ${profile?.role === "unverified" ? "border-muted" : "border-primary/20"} shadow-2xl relative`}
+              className={`w-24 h-24 md:w-32 md:h-32 rounded-[2rem] md:rounded-[2.5rem] overflow-hidden border-4 ${profile?.role === "unverified" ? "border-muted" : "border-primary/20"} shadow-2xl relative transition-all`}
             >
               {profile?.image || editForm?.image ? (
                 <img
@@ -194,7 +189,7 @@ export default function UserDashboard() {
                   className="w-full h-full object-cover"
                 />
               ) : (
-                <div className="w-full h-full bg-muted flex items-center justify-center text-3xl font-black text-muted-foreground/40">
+                <div className="w-full h-full bg-muted flex items-center justify-center text-2xl md:text-3xl font-black text-muted-foreground/40">
                   {profile?.name
                     .split(" ")
                     .map((n: string) => n[0])
@@ -205,14 +200,14 @@ export default function UserDashboard() {
 
               {profile?.role === "unverified" && (
                 <div className="absolute inset-0 bg-background/60 backdrop-blur-[2px] flex items-center justify-center">
-                  <Lock className="w-8 h-8 text-muted-foreground/50" />
+                  <Lock className="w-6 h-6 md:w-8 md:h-8 text-muted-foreground/50" />
                 </div>
               )}
 
               {isEditing && profile?.role !== "unverified" && (
                 <label className="absolute inset-0 bg-black/40 flex flex-col items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer">
-                  <Camera className="w-8 h-8 text-white mb-1" />
-                  <span className="text-[8px] font-black text-white uppercase tracking-tighter">
+                  <Camera className="w-6 h-6 md:w-8 md:h-8 text-white mb-1" />
+                  <span className="text-[6px] md:text-[8px] font-black text-white uppercase tracking-tighter">
                     Update
                   </span>
                   <input
@@ -232,34 +227,34 @@ export default function UserDashboard() {
                   onClick={() =>
                     setEditForm((prev: any) => ({ ...prev, image: "" }))
                   }
-                  className="absolute -top-2 -right-2 w-8 h-8 bg-destructive text-white rounded-full flex items-center justify-center shadow-lg hover:scale-110 transition-transform"
+                  className="absolute -top-1 -right-1 md:-top-2 md:-right-2 w-6 h-6 md:w-8 md:h-8 bg-destructive text-white rounded-full flex items-center justify-center shadow-lg hover:scale-110 transition-transform"
                 >
-                  <Trash2 className="w-4 h-4" />
+                  <Trash2 className="w-3 h-3 md:w-4 md:h-4" />
                 </button>
               )}
           </div>
 
-          <div className="space-y-4">
-            <div className="flex flex-wrap gap-2">
+          <div className="space-y-3 md:space-y-4 w-full text-center md:text-left">
+            <div className="flex flex-wrap gap-2 justify-center md:justify-start">
               <Badge
-                className={`px-4 py-1.5 rounded-full border text-[10px] font-black uppercase tracking-widest ${getRoleBadgeClasses(profile?.role)}`}
+                className={`px-3 py-1 md:px-4 md:py-1.5 rounded-full border text-[9px] md:text-[10px] font-black uppercase tracking-widest ${getRoleBadgeClasses(profile?.role || "")}`}
               >
                 {profile?.role} Identity
               </Badge>
               {getTags().map((tag) => (
                 <Badge
                   key={tag.label}
-                  className={`px-4 py-1.5 rounded-full border text-[10px] font-black uppercase tracking-widest ${tag.color}`}
+                  className={`px-3 py-1 md:px-4 md:py-1.5 rounded-full border text-[9px] md:text-[10px] font-black uppercase tracking-widest ${tag.color}`}
                 >
                   {tag.label}
                 </Badge>
               ))}
             </div>
-            <h1 className="text-4xl md:text-5xl font-black tracking-tight flex items-baseline gap-2">
+            <h1 className="text-3xl md:text-5xl font-black tracking-tight flex items-baseline justify-center md:justify-start gap-1 md:gap-2">
               Hey, {profile?.name.split(" ")[0]}
               <span className="text-primary animate-pulse">.</span>
             </h1>
-            <p className="text-muted-foreground font-medium max-w-md">
+            <p className="text-muted-foreground text-sm md:text-base font-medium max-w-md mx-auto md:mx-0">
               Welcome to your HIMSU central dashboard. Manage your identity,
               verification status, and preferences.
             </p>
@@ -269,17 +264,17 @@ export default function UserDashboard() {
         {!isEditing ? (
           <Button
             onClick={() => setIsEditing(true)}
-            className="rounded-2xl h-14 px-8 font-bold shadow-xl shadow-primary/20 transition-all hover:-translate-y-1 active:scale-95"
+            className="w-full md:w-auto rounded-xl md:rounded-2xl h-12 md:h-14 px-8 font-bold shadow-xl shadow-primary/20 transition-all hover:-translate-y-1 active:scale-95"
           >
             <Edit className="w-4 h-4 mr-2" />
             Modify Profile
           </Button>
         ) : (
-          <div className="flex gap-3">
+          <div className="flex gap-3 w-full md:w-auto">
             <Button
               variant="outline"
               onClick={() => setIsEditing(false)}
-              className="rounded-2xl h-14 px-8 font-bold border-2"
+              className="flex-1 md:flex-none rounded-xl md:rounded-2xl h-12 md:h-14 px-6 md:px-8 font-bold border-2"
             >
               <X className="w-4 h-4 mr-2" />
               Discard
@@ -287,7 +282,7 @@ export default function UserDashboard() {
             <Button
               onClick={handleSave}
               disabled={updateProfileMutation.isPending}
-              className="rounded-2xl h-14 px-8 font-bold shadow-xl shadow-primary/20"
+              className="flex-1 md:flex-none rounded-xl md:rounded-2xl h-12 md:h-14 px-6 md:px-8 font-bold shadow-xl shadow-primary/20"
             >
               {updateProfileMutation.isPending ? (
                 <Loader2 className="w-4 h-4 mr-2 animate-spin" />

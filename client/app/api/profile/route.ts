@@ -13,7 +13,13 @@ export async function GET(req: NextRequest) {
       );
     }
 
-    const { id } = JSON.parse(authUser.value);
+    let jsonString = authUser.value;
+    try {
+      jsonString = decodeURIComponent(authUser.value);
+    } catch (e) {
+      jsonString = authUser.value;
+    }
+    const { id } = JSON.parse(jsonString);
     const user = await User.findById(id).populate("college", "name shortName");
 
     if (!user) {
@@ -43,7 +49,13 @@ export async function PATCH(req: NextRequest) {
       );
     }
 
-    const { id } = JSON.parse(authUser.value);
+    let jsonString = authUser.value;
+    try {
+      jsonString = decodeURIComponent(authUser.value);
+    } catch (e) {
+      jsonString = authUser.value;
+    }
+    const { id } = JSON.parse(jsonString);
     const body = await req.json();
 
     // Only allow specific fields to be updated by the user themselves

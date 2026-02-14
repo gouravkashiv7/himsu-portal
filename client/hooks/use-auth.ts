@@ -10,8 +10,18 @@ type User = {
   email: string;
   role: string;
   image?: string;
-  college?: string;
+  college?: any;
   rejectionReason?: string;
+  phone?: string;
+  bloodGroup?: string;
+  isBloodDonor?: boolean;
+  isCampusVolunteer?: boolean;
+  location?: {
+    city?: string;
+    sector?: string;
+  };
+  otherCollegeName?: string;
+  createdAt?: string;
 };
 
 export function useAuth() {

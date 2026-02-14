@@ -30,7 +30,10 @@ export async function GET(req: NextRequest) {
     }
 
     // Fetch fresh user data from DB
-    const user = await User.findById(userId);
+    const user = await User.findById(userId).populate(
+      "college",
+      "name shortName",
+    );
 
     if (!user) {
       return NextResponse.json({ success: false });
@@ -48,6 +51,11 @@ export async function GET(req: NextRequest) {
           college: user.college,
           rejectionReason: user.rejectionReason,
           isCampusVolunteer: user.isCampusVolunteer,
+          location: user.location,
+          isBloodDonor: user.isBloodDonor,
+          bloodGroup: user.bloodGroup,
+          phone: user.phone,
+          createdAt: user.createdAt,
         },
       },
       {
