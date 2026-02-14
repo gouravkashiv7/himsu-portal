@@ -9,6 +9,7 @@ type User = {
   name: string;
   email: string;
   role: string;
+  image?: string;
   college?: string;
   rejectionReason?: string;
 };

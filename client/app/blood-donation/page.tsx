@@ -240,7 +240,7 @@ export default function BloodDonationPage() {
             lives.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Link href="/join?tab=volunteer">
+            <Link href="/join?tab=donor">
               <Button
                 size="lg"
                 className="bg-red-600 hover:bg-red-700 text-white font-black px-10 h-16 rounded-2xl text-lg shadow-2xl shadow-red-600/30 w-full sm:w-auto"

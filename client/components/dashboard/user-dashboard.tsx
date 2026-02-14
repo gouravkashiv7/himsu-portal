@@ -543,7 +543,7 @@ export default function UserDashboard() {
                   Health Registry
                 </h3>
                 <div className="flex flex-col md:flex-row gap-8 items-start md:items-center">
-                  <div className="space-y-2 min-w-[150px]">
+                  <div className="space-y-2 min-w-37.5">
                     <label className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground/60 ml-1">
                       Blood Group
                     </label>

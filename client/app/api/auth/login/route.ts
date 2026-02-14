@@ -37,6 +37,7 @@ export async function POST(req: NextRequest) {
         name: user.name,
         email: user.email,
         role: user.role,
+        image: user.image,
         college: user.college,
         rejectionReason: user.rejectionReason,
       },
@@ -52,6 +53,7 @@ export async function POST(req: NextRequest) {
       JSON.stringify({
         id: user._id,
         name: user.name,
+        image: user.image,
         college: user.college,
         rejectionReason: user.rejectionReason,
       }),

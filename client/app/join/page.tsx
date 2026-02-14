@@ -39,7 +39,7 @@ export default function JoinPage() {
               <TabsList className="grid w-full grid-cols-3 mb-8">
                 <TabsTrigger value="login">Already a Member</TabsTrigger>
                 <TabsTrigger value="member">New Member</TabsTrigger>
-                <TabsTrigger value="volunteer">Blood Donor Only</TabsTrigger>
+                <TabsTrigger value="donor">Blood Donor Only</TabsTrigger>
               </TabsList>
 
               <TabsContent value="login">
@@ -62,16 +62,16 @@ export default function JoinPage() {
                 <RegisterForm type="member" />
               </TabsContent>
 
-              <TabsContent value="volunteer">
+              <TabsContent value="donor">
                 <div className="text-center mb-6">
                   <h3 className="text-xl font-bold text-red-600">
-                    Blood Donation Volunteer
+                    Blood Donation Donor
                   </h3>
                   <p className="text-sm text-muted-foreground">
                     Register only as a donor to save lives.
                   </p>
                 </div>
-                <RegisterForm type="volunteer" />
+                <RegisterForm type="donor" />
               </TabsContent>
             </Tabs>
           </div>

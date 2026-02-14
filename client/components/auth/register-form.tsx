@@ -31,7 +31,7 @@ type FormData = z.infer<typeof registerSchema>;
 export function RegisterForm({
   type = "member",
 }: {
-  type?: "member" | "volunteer";
+  type?: "member" | "donor";
 }) {
   const router = useRouter();
   const [colleges, setColleges] = useState<{ _id: string; name: string }[]>([]);
@@ -48,7 +48,7 @@ export function RegisterForm({
   } = useForm<FormData>({
     resolver: zodResolver(registerSchema),
     defaultValues: {
-      isBloodDonor: type === "volunteer",
+      isBloodDonor: type === "donor",
       role: "member",
     },
   });
@@ -250,7 +250,7 @@ export function RegisterForm({
         {/* Blood Group */}
         <div className="space-y-2">
           <label className="text-sm font-medium">
-            Blood Group {type === "volunteer" && "*"}
+            Blood Group {type === "donor" && "*"}
           </label>
           <select
             className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background"
@@ -290,7 +290,7 @@ export function RegisterForm({
       <Button type="submit" disabled={isSubmitting} className="w-full mt-6">
         {isSubmitting
           ? "Registering..."
-          : type === "volunteer"
+          : type === "donor"
             ? "Register as Blood Donor"
             : "Join HIMSU"}
       </Button>

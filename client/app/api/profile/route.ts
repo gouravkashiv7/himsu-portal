@@ -77,7 +77,25 @@ export async function PATCH(req: NextRequest) {
       );
     }
 
-    return NextResponse.json({ success: true, data: user });
+    const response = NextResponse.json({ success: true, data: user });
+
+    // Update the auth cookie if name or image changed
+    response.cookies.set(
+      "auth_user",
+      JSON.stringify({
+        id: user._id,
+        name: user.name,
+        image: user.image,
+        college: user.college?._id || user.college,
+        rejectionReason: user.rejectionReason,
+      }),
+      {
+        httpOnly: false,
+        maxAge: 60 * 60 * 24 * 7,
+      },
+    );
+
+    return response;
   } catch (error: any) {
     return NextResponse.json(
       { success: false, message: error.message },
