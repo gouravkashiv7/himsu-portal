@@ -1,36 +1,110 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Himsu Portal Frontend
 
-## Getting Started
+This is the frontend application for the Himsu Portal, built with [Next.js](https://nextjs.org) 16 (App Router) and TypeScript. It serves as the user interface for accessing various portal services including college information, blood donation resources, and more.
 
-First, run the development server:
+## 🚀 Tech Stack
+
+- **Framework:** [Next.js 16](https://nextjs.org/) (React 19)
+- **Language:** [TypeScript](https://www.typescriptlang.org/)
+- **Styling:** [Tailwind CSS v4](https://tailwindcss.com/), [Lucide React](https://lucide.dev/) (icons)
+- **UI Components:** [Radix UI](https://www.radix-ui.com/), Custom components
+- **State Management:** [Zustand](https://github.com/pmndrs/zustand), [React Query](https://tanstack.com/query/latest)
+- **Forms & Validation:** [React Hook Form](https://react-hook-form.com/), [Zod](https://zod.dev/)
+- **Utilities:** Axios, date-fns, clsx, tailwind-merge
+- **SEO:** next-seo, next-sitemap
+- **Theming:** next-themes (Dark/Light mode)
+
+## 📂 Project Structure
+
+The project follows the standard Next.js App Router structure:
+
+```
+client/
+├── app/                  # Application routes and pages
+│   ├── blood-donation/   # Blood donation related pages
+│   ├── college/          # College related pages
+│   ├── faq/              # FAQ page
+│   ├── resources/        # Resource pages
+│   ├── globals.css       # Global styles and Tailwind directives
+│   ├── layout.tsx        # Root layout definition
+│   └── page.tsx          # Home page
+├── components/           # Reusable React components
+│   ├── blood/            # Components specific to blood donation feature
+│   ├── college/          # Components specific to college feature
+│   ├── home/             # Components used on the home page
+│   ├── layout/           # Global layout components (Header, Footer, etc.)
+│   ├── ui/               # Generic UI components (Buttons, Inputs, etc.)
+│   ├── providers.tsx     # App-wide providers (Theme, QueryClient)
+│   └── theme-toggle.tsx  # Dark/Light mode toggle
+├── lib/                  # Utility functions and shared logic
+│   ├── data/             # Static data and data access layers
+│   └── utils.ts          # Helper functions (e.g., class name merging)
+├── public/               # Static assets (images, icons)
+└── ...config files       # Configuration for Next.js, Tailwind, TypeScript, etc.
+```
+
+## 🛠️ Getting Started
+
+### Prerequisites
+
+- Node.js (LTS version recommended)
+- [pnpm](https://pnpm.io/) (Package Manager)
+
+### Installation
+
+1.  Navigate to the client directory:
+
+    ```bash
+    cd client
+    ```
+
+2.  Install dependencies:
+    ```bash
+    pnpm install
+    ```
+
+### Running Locally
+
+To start the development server:
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
 pnpm dev
-# or
-bun dev
 ```
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### Building for Production
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+To create an optimized production build:
 
-## Learn More
+```bash
+pnpm build
+```
 
-To learn more about Next.js, take a look at the following resources:
+To start the production server:
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+```bash
+pnpm start
+```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## 📜 Scripts
 
-## Deploy on Vercel
+| Script      | Description                                      |
+| :---------- | :----------------------------------------------- |
+| `dev`       | Starts the development server with hot-reloading |
+| `build`     | Builds the application for production            |
+| `start`     | Starts the production server                     |
+| `postbuild` | Automatically runs `next-sitemap` after a build  |
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## ⚙️ Configuration
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- **Environment Variables:** Create a `.env.local` file in the root of the `client` directory to store environment-specific variables.
+- **Tailwind CSS:** Configured via `postcss.config.mjs` and `globals.css` (Tailwind v4).
+- **Sitemap:** Configured via `next-sitemap.config.js`.
+
+## ✨ Key Features
+
+- **Responsive Design:** Fully responsive layout using Tailwind CSS.
+- **Dark Mode:** Built-in support for light and dark themes.
+- **SEO Optimized:** Includes sitemap generation and SEO metadata.
+- **Type Safety:** comprehensive TypeScript support.

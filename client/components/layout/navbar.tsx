@@ -9,6 +9,8 @@ import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { ThemeToggle } from "@/components/theme-toggle";
 
+import { useAuth } from "@/hooks";
+
 const navLinks = [
   { href: "/", label: "Home" },
   { href: "/resources", label: "Resources" },
@@ -20,6 +22,7 @@ const navLinks = [
 export function Navbar() {
   const [isOpen, setIsOpen] = React.useState(false);
   const [scrolled, setScrolled] = React.useState(false);
+  const { user, logout } = useAuth();
 
   React.useEffect(() => {
     const handleScroll = () => {
@@ -84,12 +87,88 @@ export function Navbar() {
           <Button variant="ghost" size="icon" className="rounded-full">
             <Search className="w-5 h-5" />
           </Button>
-          <Button
-            variant="default"
-            className="bg-primary hover:bg-green-700 text-white rounded-full px-6 shadow-md shadow-green-200 dark:shadow-none"
-          >
-            Join HIMSU
-          </Button>
+
+          {user ? (
+            <div className="flex items-center gap-4">
+              <div className="flex items-center gap-3">
+                <Link
+                  href={
+                    user.role === "superadmin" || user.role === "president"
+                      ? "/admin/dashboard"
+                      : "/dashboard"
+                  }
+                  className="relative group"
+                >
+                  <div className="w-10 h-10 rounded-full overflow-hidden border-2 border-primary/20 group-hover:border-primary transition-colors shadow-sm">
+                    {user.image ? (
+                      <img
+                        src={user.image}
+                        alt={user.name}
+                        className="w-full h-full object-cover"
+                      />
+                    ) : (
+                      <div className="w-full h-full bg-muted flex items-center justify-center text-xs font-black text-muted-foreground/60 focus:outline-none">
+                        {user.name
+                          .split(" ")
+                          .map((n: string) => n[0])
+                          .join("")
+                          .toUpperCase()}
+                      </div>
+                    )}
+                  </div>
+                </Link>
+                <div className="hidden lg:flex flex-col text-right">
+                  <span className="text-sm font-medium">{user.name}</span>
+                  <Link
+                    href={
+                      user.role === "superadmin" || user.role === "president"
+                        ? "/admin/dashboard"
+                        : "/dashboard"
+                    }
+                    className="text-[10px] text-primary hover:underline font-bold uppercase"
+                  >
+                    Dashboard
+                  </Link>
+                </div>
+              </div>
+              <button
+                onClick={logout}
+                className="p-2 hover:bg-muted rounded-full text-red-500"
+                title="Logout"
+              >
+                {/* Using a simple logout icon for brevity */}
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="20"
+                  height="20"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
+                  <polyline points="16 17 21 12 16 7" />
+                  <line x1="21" x2="9" y1="12" y2="12" />
+                </svg>
+              </button>
+            </div>
+          ) : (
+            <>
+              <Link href="/join?tab=login">
+                <Button variant="ghost">Login</Button>
+              </Link>
+              <Link href="/join?tab=member">
+                <Button
+                  variant="default"
+                  className="bg-primary hover:bg-green-700 text-white rounded-full px-6 shadow-md shadow-green-200 dark:shadow-none"
+                >
+                  Join HIMSU
+                </Button>
+              </Link>
+            </>
+          )}
         </div>
 
         {/* Mobile Toggle */}
@@ -116,9 +195,11 @@ export function Navbar() {
           ))}
           <div className="flex items-center gap-4 pt-2 border-t border-border/50">
             <ThemeToggle />
-            <Button className="flex-1 bg-primary text-white shadow-lg shadow-green-200/50 dark:shadow-none">
-              Join HIMSU
-            </Button>
+            <Link href="/join?tab=member" className="flex-1">
+              <Button className="w-full bg-primary text-white shadow-lg shadow-green-200/50 dark:shadow-none">
+                Join HIMSU
+              </Button>
+            </Link>
           </div>
         </div>
       )}

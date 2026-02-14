@@ -1,14 +1,28 @@
-import { College } from "@/lib/data/colleges";
-import { MapPin, Globe, Phone, Mail, Award, Calendar } from "lucide-react";
+import {
+  MapPin,
+  Globe,
+  Phone,
+  Mail,
+  Award,
+  Calendar,
+  MessageCircle,
+} from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 
-export function CollegeHeader({ college }: { college: College }) {
+// Define a local interface or import from a shared types file
+// Using 'any' for now to be flexible with the Mongoose / JSON data structure
+// ideally we should export the College type from a shared library
+interface CollegeHeaderProps {
+  college: any;
+}
+
+export function CollegeHeader({ college }: CollegeHeaderProps) {
   return (
     <div className="relative w-full">
       {/* Banner */}
       <div
-        className={`h-48 md:h-64 w-full ${college.bannerColor} relative overflow-hidden`}
+        className={`h-48 md:h-64 w-full ${college.bannerColor || "bg-primary"} relative overflow-hidden`}
       >
         <div className="absolute inset-0 bg-black/20" />
         <div className="absolute inset-0 bg-linear-to-t from-background via-transparent to-transparent opacity-90" />
@@ -18,8 +32,16 @@ export function CollegeHeader({ college }: { college: College }) {
       <div className="container mx-auto px-4 -mt-16 relative z-10">
         <div className="flex flex-col md:flex-row items-start md:items-end gap-6 mb-8">
           {/* Logo Placeholder */}
-          <div className="w-32 h-32 rounded-xl bg-card border-4 border-background shadow-xl flex items-center justify-center text-4xl font-bold text-primary shrinking-0">
-            {college.shortName}
+          <div className="w-32 h-32 rounded-xl bg-card border-4 border-background shadow-xl flex items-center justify-center text-4xl font-bold text-primary shrink-0 overflow-hidden">
+            {college.logo ? (
+              <img
+                src={college.logo}
+                alt={college.shortName}
+                className="w-full h-full object-cover"
+              />
+            ) : (
+              college.shortName
+            )}
           </div>
 
           <div className="flex-1 space-y-2 mb-2">
@@ -54,7 +76,7 @@ export function CollegeHeader({ college }: { college: College }) {
 
         {/* Highlights Badges */}
         <div className="flex flex-wrap gap-2 mb-8">
-          {college.highlights.map((tag) => (
+          {college.highlights?.map((tag: string) => (
             <Badge
               key={tag}
               variant="secondary"
@@ -71,46 +93,80 @@ export function CollegeHeader({ college }: { college: College }) {
         </p>
 
         {/* Contact Strip */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 border-t border-b py-6 mb-12">
-          <a
-            href={`mailto:${college.contact.email}`}
-            className="flex items-center gap-3 p-3 rounded-lg hover:bg-muted/50 transition-colors"
-          >
-            <div className="p-2 bg-primary/10 rounded-full text-primary">
-              <Mail className="w-4 h-4" />
-            </div>
-            <div>
-              <div className="text-xs text-muted-foreground">Email</div>
-              <div className="font-medium text-sm">{college.contact.email}</div>
-            </div>
-          </a>
-          <a
-            href={`tel:${college.contact.phone}`}
-            className="flex items-center gap-3 p-3 rounded-lg hover:bg-muted/50 transition-colors"
-          >
-            <div className="p-2 bg-primary/10 rounded-full text-primary">
-              <Phone className="w-4 h-4" />
-            </div>
-            <div>
-              <div className="text-xs text-muted-foreground">Phone</div>
-              <div className="font-medium text-sm">{college.contact.phone}</div>
-            </div>
-          </a>
-          <a
-            href={college.contact.website}
-            target="_blank"
-            className="flex items-center gap-3 p-3 rounded-lg hover:bg-muted/50 transition-colors"
-          >
-            <div className="p-2 bg-primary/10 rounded-full text-primary">
-              <Globe className="w-4 h-4" />
-            </div>
-            <div>
-              <div className="text-xs text-muted-foreground">Website</div>
-              <div className="font-medium text-sm truncate max-w-50">
-                {college.contact.website}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 border-t border-b py-6 mb-12">
+          {college.contact?.email && (
+            <a
+              href={`mailto:${college.contact.email}`}
+              className="flex items-center gap-3 p-3 rounded-lg hover:bg-muted/50 transition-colors"
+            >
+              <div className="p-2 bg-primary/10 rounded-full text-primary">
+                <Mail className="w-4 h-4" />
               </div>
-            </div>
-          </a>
+              <div>
+                <div className="text-xs text-muted-foreground">Email</div>
+                <div className="font-medium text-sm break-all">
+                  {college.contact.email}
+                </div>
+              </div>
+            </a>
+          )}
+
+          {college.contact?.phone && (
+            <a
+              href={`tel:${college.contact.phone}`}
+              className="flex items-center gap-3 p-3 rounded-lg hover:bg-muted/50 transition-colors"
+            >
+              <div className="p-2 bg-primary/10 rounded-full text-primary">
+                <Phone className="w-4 h-4" />
+              </div>
+              <div>
+                <div className="text-xs text-muted-foreground">Phone</div>
+                <div className="font-medium text-sm">
+                  {college.contact.phone}
+                </div>
+              </div>
+            </a>
+          )}
+
+          {college.contact?.website && (
+            <a
+              href={college.contact.website}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center gap-3 p-3 rounded-lg hover:bg-muted/50 transition-colors"
+            >
+              <div className="p-2 bg-primary/10 rounded-full text-primary">
+                <Globe className="w-4 h-4" />
+              </div>
+              <div>
+                <div className="text-xs text-muted-foreground">Website</div>
+                <div className="font-medium text-sm truncate max-w-37.5">
+                  {college.contact.website}
+                </div>
+              </div>
+            </a>
+          )}
+
+          {college.contact?.whatsapp && (
+            <a
+              href={college.contact.whatsapp}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center gap-3 p-3 rounded-lg hover:bg-green-50 dark:hover:bg-green-900/10 transition-colors group"
+            >
+              <div className="p-2 bg-green-100 dark:bg-green-900/30 rounded-full text-green-600 dark:text-green-400 group-hover:scale-110 transition-transform">
+                <MessageCircle className="w-4 h-4" />
+              </div>
+              <div>
+                <div className="text-xs text-muted-foreground">
+                  Join Community
+                </div>
+                <div className="font-medium text-sm text-green-600 dark:text-green-400">
+                  WhatsApp Group
+                </div>
+              </div>
+            </a>
+          )}
         </div>
       </div>
     </div>

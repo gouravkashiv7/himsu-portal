@@ -40,7 +40,7 @@ export const faqs: FAQ[] = [
     id: "f5",
     question: "How can I join HIMSU?",
     answer:
-      "You can join HIMSU by contacting any unit president or using the 'Join HIMSU' button in the menu to fill the volunteer form.",
+      "You can join HIMSU by contacting any unit president or using the 'Join HIMSU' button in the menu to fill the membership form.",
     category: "General",
   },
 ];
