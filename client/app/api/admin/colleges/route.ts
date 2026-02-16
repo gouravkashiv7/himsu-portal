@@ -57,8 +57,20 @@ export async function GET(req: NextRequest) {
 }
 
 export async function POST(req: NextRequest) {
-  await dbConnect();
   try {
+    await dbConnect();
+    const authRole = req.cookies.get("auth_role")?.value;
+
+    if (authRole !== "superadmin") {
+      return NextResponse.json(
+        {
+          success: false,
+          message: "Forbidden: Only superadmins can add colleges",
+        },
+        { status: 403 },
+      );
+    }
+
     const body = await req.json();
     const college = await College.create(body);
     return NextResponse.json({ success: true, data: college }, { status: 201 });

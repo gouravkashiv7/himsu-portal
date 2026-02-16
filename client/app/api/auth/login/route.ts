@@ -8,12 +8,13 @@ export async function POST(req: NextRequest) {
     await dbConnect();
     const { email, password } = await req.json();
 
-    // Normalize email for lookup
+    // Normalize and escape email for lookup
     const normalizedEmail = email.toLowerCase().trim();
+    const escapedEmail = normalizedEmail.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 
     // Case-insensitive search to handle any legacy mixed-case emails
     const user = await User.findOne({
-      email: { $regex: new RegExp(`^${normalizedEmail}$`, "i") },
+      email: { $regex: new RegExp(`^${escapedEmail}$`, "i") },
     });
 
     if (!user) {

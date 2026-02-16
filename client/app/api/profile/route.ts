@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import dbConnect from "@/lib/db";
 import User from "@/lib/models/User";
+import College from "@/lib/models/College";
 
 export async function GET(req: NextRequest) {
   try {

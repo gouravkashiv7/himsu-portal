@@ -30,10 +30,13 @@ export default function LoginPage() {
       const response = await axios.post("/api/auth/login", data);
 
       toast.success("Logged in successfully");
-      if (response.data.role === "superadmin") {
+      if (
+        response.data.role === "superadmin" ||
+        response.data.role === "president"
+      ) {
         window.location.href = "/admin/dashboard";
       } else {
-        window.location.href = "/";
+        window.location.href = "/dashboard";
       }
     } catch (error: any) {
       toast.error(error.response?.data?.message || "Login failed");

@@ -56,3 +56,6 @@ const CollegeSchema = new Schema(
 
 export default mongoose.models.College ||
   mongoose.model("College", CollegeSchema);
+
+// Ensure User model is registered for populate
+import "./User";

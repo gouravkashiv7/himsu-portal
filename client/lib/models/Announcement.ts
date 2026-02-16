@@ -13,3 +13,6 @@ const AnnouncementSchema = new Schema(
 
 export default mongoose.models.Announcement ||
   mongoose.model("Announcement", AnnouncementSchema);
+
+// Ensure User model is registered for populate
+import "./User";

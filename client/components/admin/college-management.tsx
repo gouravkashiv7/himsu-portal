@@ -14,6 +14,7 @@ import { AddCollegeDialog } from "./add-college-dialog";
 import { AssignPresidentDialog } from "./assign-president-dialog";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { useAuth } from "@/hooks/use-auth";
 
 type College = {
   _id: string;
@@ -29,6 +30,7 @@ type College = {
 };
 
 export function CollegeManagement() {
+  const { user } = useAuth();
   const { data, isLoading, isError, error } = useQuery({
     queryKey: ["colleges"],
     queryFn: async () => {
@@ -73,7 +75,7 @@ export function CollegeManagement() {
             You are currently managing {data?.length || 0} colleges.
           </p>
         </div>
-        <AddCollegeDialog />
+        {user?.role === "superadmin" && <AddCollegeDialog />}
       </div>
 
       <div className="rounded-2xl border border-border/50 bg-card/50 backdrop-blur-sm overflow-hidden shadow-sm">

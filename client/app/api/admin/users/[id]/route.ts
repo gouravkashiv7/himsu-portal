@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import dbConnect from "@/lib/db";
 import User from "@/lib/models/User";
+import College from "@/lib/models/College";
 import { getServerSession } from "next-auth/next";
 // Assuming you have an auth options file, adjust path as needed
 // import { authOptions } from "@/app/api/auth/[...nextauth]/route";

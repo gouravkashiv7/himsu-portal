@@ -33,12 +33,15 @@ export function LoginForm() {
 
       if (response.data.success) {
         toast.success("Logged in successfully");
-        if (response.data.role === "superadmin") {
+        if (
+          response.data.role === "superadmin" ||
+          response.data.role === "president"
+        ) {
           window.location.href = "/admin/dashboard";
         } else {
           // Force a full reload to update auth state in navbar or use router.refresh()
           // usually simple reload ensures all client state is clean
-          window.location.href = "/";
+          window.location.href = "/dashboard";
         }
       }
     } catch (error: any) {
