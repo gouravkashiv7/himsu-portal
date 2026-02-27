@@ -21,9 +21,15 @@ const UserSchema = new Schema(
     phone: { type: String },
     role: {
       type: String,
-      enum: ["superadmin", "president", "member", "unverified"],
       default: "unverified",
     },
+    roleHistory: [
+      {
+        role: { type: String, required: true },
+        session: { type: String }, // Format like 2005-06
+        assignedAt: { type: Date, default: Date.now },
+      },
+    ],
     rejectionReason: { type: String }, // For unverified users if rejected
 
     // College Affiliation

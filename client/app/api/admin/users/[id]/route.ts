@@ -40,7 +40,7 @@ export async function PATCH(
     await dbConnect();
     const { id } = await params;
     const body = await req.json();
-    const { role, rejectionReason } = body;
+    const { role, session, rejectionReason } = body;
 
     const userToUpdate = await User.findById(id).populate("college");
     if (!userToUpdate) {
@@ -74,7 +74,15 @@ export async function PATCH(
       }
     }
 
-    if (role) userToUpdate.role = role;
+    if (role) {
+      userToUpdate.role = role;
+      userToUpdate.roleHistory.push({
+        role,
+        session: session || undefined,
+        assignedAt: new Date(),
+      });
+    }
+
     if (rejectionReason !== undefined)
       userToUpdate.rejectionReason = rejectionReason;
 

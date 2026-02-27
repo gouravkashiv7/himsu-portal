@@ -6,27 +6,27 @@ import type { Metadata } from "next";
 
 export const metadata: Metadata = {
   title: {
-    default: "HIMSU – Himachal Students Union | Chandigarh",
+    default: "HIMSU – Chandigarh Govt & Private College Admissions",
     template: "%s | HIMSU",
   },
   description:
-    "Official portal of Himachal Students Union (HIMSU) — your one-stop platform for college admissions to PU, DAV, PPGC-11 & SD College in Chandigarh. Get real-time updates, study resources, blood donation support, and community events.",
+    "Official HIMSU student portal for admission to Panjab University (PU), DAV, SD, & GC-11 Chandigarh. Get real-time updates, resources, and community support.",
   keywords: [
     "HIMSU",
     "Himachal Students Union",
-    "Chandigarh colleges",
-    "PU admissions",
-    "DAV College",
-    "PPGC-11",
-    "SD College",
-    "student portal",
+    "Chandigarh college admissions",
+    "Govt colleges in Chandigarh",
+    "Private colleges in Chandigarh",
+    "PU Chandigarh Admissions",
+    "Panjab University admission",
+    "DAV College Chandigarh Admission",
+    "SD College Chandigarh",
+    "GC-11 Admissions",
+    "student union Chandigarh",
     "blood donation Chandigarh",
-    "college admissions 2026",
-    "Panjab University",
-    "Himachali students",
   ],
   authors: [{ name: "HIMSU", url: "https://himsu.in" }],
-  creator: "Codefinite",
+  creator: "HIMSU",
   publisher: "HIMSU – Himachal Students Union",
   metadataBase: new URL("https://himsu.in"),
   alternates: {
@@ -37,9 +37,9 @@ export const metadata: Metadata = {
     locale: "en_IN",
     url: "https://himsu.in",
     siteName: "HIMSU – Himachal Students Union",
-    title: "HIMSU – Your Gateway to Top Colleges in Chandigarh",
+    title: "HIMSU – Chandigarh Govt & Private College Admissions",
     description:
-      "One portal for PU, DAV, PPGC-11 & SD College admissions. Real-time updates, study resources, and student welfare by HIMSU.",
+      "Official HIMSU student portal for admission to Panjab University (PU), DAV, SD, & GC-11 Chandigarh. Get real-time updates, resources, and community support.",
     images: [
       {
         url: "/logo.jpg",
@@ -51,9 +51,9 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "HIMSU – Himachal Students Union",
+    title: "HIMSU – Chandigarh College Admissions",
     description:
-      "Your one-stop portal for college admissions in Chandigarh. Join 50,000+ students.",
+      "Your one-stop HIMSU portal for college admissions in Chandigarh. Join 50,000+ students.",
     images: ["/logo.jpg"],
   },
   robots: {

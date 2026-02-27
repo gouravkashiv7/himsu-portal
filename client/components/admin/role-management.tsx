@@ -29,6 +29,7 @@ interface Role {
   description: string;
   color: string;
   isStatic: boolean;
+  isPanelRole: boolean;
 }
 
 export function RoleManagement() {
@@ -36,6 +37,7 @@ export function RoleManagement() {
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
   const [color, setColor] = useState("blue");
+  const [isPanelRole, setIsPanelRole] = useState(false);
 
   const { data: roles, isLoading } = useQuery({
     queryKey: ["roles"],
@@ -47,12 +49,18 @@ export function RoleManagement() {
 
   const createMutation = useMutation({
     mutationFn: async () => {
-      await axios.post("/api/admin/roles", { name, description, color });
+      await axios.post("/api/admin/roles", {
+        name,
+        description,
+        color,
+        isPanelRole,
+      });
     },
     onSuccess: () => {
       toast.success("New role added");
       setName("");
       setDescription("");
+      setIsPanelRole(false);
       queryClient.invalidateQueries({ queryKey: ["roles"] });
     },
     onError: (err: any) => {
@@ -188,6 +196,19 @@ export function RoleManagement() {
                 <option value="slate">Slate</option>
               </select>
             </div>
+            <div className="space-y-2 flex flex-col justify-center pb-2">
+              <label className="flex items-center gap-2 cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={isPanelRole}
+                  onChange={(e) => setIsPanelRole(e.target.checked)}
+                  className="w-4 h-4 rounded border-primary/20 bg-background text-primary focus:ring-primary/20 accent-primary"
+                />
+                <span className="text-[10px] font-bold text-muted-foreground uppercase">
+                  Panel Role
+                </span>
+              </label>
+            </div>
             <Button
               disabled={createMutation.isPending}
               className="rounded-xl h-11 px-8 shadow-lg shadow-primary/20 font-bold"
@@ -232,6 +253,14 @@ export function RoleManagement() {
                     >
                       <Shield className="h-3.5 w-3.5 text-muted-foreground" />
                     </span>
+                  )}
+                  {role.isPanelRole && (
+                    <Badge
+                      variant="outline"
+                      className="ml-2 text-[9px] uppercase tracking-tighter"
+                    >
+                      Panel
+                    </Badge>
                   )}
                 </div>
                 <h4 className="font-bold text-foreground capitalize mb-2">

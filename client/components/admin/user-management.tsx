@@ -29,6 +29,11 @@ type UserType = {
   name: string;
   email: string;
   role: string;
+  roleHistory?: Array<{
+    role: string;
+    session?: string;
+    assignedAt: string;
+  }>;
   image?: string;
   phone?: string;
   bloodGroup?: string;
@@ -52,6 +57,7 @@ interface Role {
   _id: string;
   name: string;
   color: string;
+  isPanelRole?: boolean;
 }
 
 export function UserManagement() {
@@ -77,8 +83,16 @@ export function UserManagement() {
   });
 
   const roleMutation = useMutation({
-    mutationFn: async ({ userId, role }: { userId: string; role: string }) => {
-      await axios.patch(`/api/admin/users/${userId}`, { role });
+    mutationFn: async ({
+      userId,
+      role,
+      session,
+    }: {
+      userId: string;
+      role: string;
+      session?: string;
+    }) => {
+      await axios.patch(`/api/admin/users/${userId}`, { role, session });
     },
     onSuccess: () => {
       toast.success("User role updated");
@@ -152,14 +166,18 @@ export function UserManagement() {
 
   const canManageUser = (targetUser: UserType) => {
     if (currentUser?.role === "superadmin") return true;
-    if (
-      currentUser?.role === "president" &&
-      targetUser.college?._id === currentUser?.college
-    ) {
-      // Presidents can manage their own college students/members
-      return (
-        targetUser.role !== "superadmin" && targetUser.role !== "president"
-      );
+    if (currentUser?.role === "president") {
+      // Compare string IDs since targetUser.college is an object and currentUser.college could be an object or string
+      const currentCollegeId =
+        typeof currentUser.college === "string"
+          ? currentUser.college
+          : currentUser.college?._id;
+
+      if (currentCollegeId && targetUser.college?._id === currentCollegeId) {
+        return (
+          targetUser.role !== "superadmin" && targetUser.role !== "president"
+        );
+      }
     }
     return false;
   };
@@ -396,22 +414,53 @@ export function UserManagement() {
                         <div className="flex flex-col items-start gap-1">
                           <select
                             value={user.role}
-                            onChange={(e) =>
+                            onChange={(e) => {
+                              const newRoleName = e.target.value;
+                              const selectedRole = roles?.find(
+                                (r: Role) => r.name === newRoleName,
+                              );
+
+                              // Require confirmation before proceeding
+                              const confirmAssign = confirm(
+                                `Are you sure you want to assign the role '${newRoleName.toUpperCase()}' to user '${user.name}'?`,
+                              );
+                              if (!confirmAssign) {
+                                // Re-select current role if they canceled
+                                e.target.value = user.role;
+                                return;
+                              }
+
+                              let session: string | undefined = undefined;
+                              if (selectedRole?.isPanelRole) {
+                                const input = prompt(
+                                  `Enter session for the panel role '${newRoleName.toUpperCase()}' assigned to '${user.name}' (e.g., 2024-25):`,
+                                  "2024-25",
+                                );
+                                if (input === null) {
+                                  // Re-select current role if they canceled
+                                  e.target.value = user.role;
+                                  return;
+                                }
+                                session = input;
+                              }
+
                               roleMutation.mutate({
                                 userId: user._id,
-                                role: e.target.value,
-                              })
-                            }
+                                role: newRoleName,
+                                session,
+                              });
+                            }}
                             className={`h-8 px-3 rounded-full text-[10px] font-bold capitalize outline-none border-none cursor-pointer hover:opacity-80 transition-opacity appearance-none text-center ${getRoleBadgeClasses(
                               user.role,
                             )}`}
                           >
                             {roles
-                              ?.filter(
-                                (r: Role) =>
+                              ?.filter((r: Role) => {
+                                return (
                                   r.name !== "superadmin" &&
-                                  r.name !== "president",
-                              )
+                                  r.name !== "president"
+                                );
+                              })
                               ?.map((r: Role) => (
                                 <option
                                   key={r._id}
@@ -459,6 +508,34 @@ export function UserManagement() {
                               <MessageSquareX className="h-4 w-4" />
                             </Button>
                           )}
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            onClick={() => {
+                              if (
+                                !user.roleHistory ||
+                                user.roleHistory.length === 0
+                              ) {
+                                alert(
+                                  "No role history available for this user.",
+                                );
+                                return;
+                              }
+                              const historyStr = user.roleHistory
+                                .map(
+                                  (h: any) =>
+                                    `- ${h.role.toUpperCase()} ${h.session ? `(${h.session})` : ""} assigned on ${new Date(h.assignedAt).toLocaleDateString()}`,
+                                )
+                                .join("\n");
+                              alert(
+                                `Role History for ${user.name}:\n\n${historyStr}`,
+                              );
+                            }}
+                            className="h-8 w-8 rounded-lg text-primary hover:bg-primary/10"
+                            title="View Role History"
+                          >
+                            <Shield className="h-4 w-4" />
+                          </Button>
                           <Button
                             variant="ghost"
                             size="icon"

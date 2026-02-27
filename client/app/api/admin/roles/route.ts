@@ -9,24 +9,28 @@ const INITIAL_ROLES = [
     description: "Full system access",
     color: "red",
     isStatic: true,
+    isPanelRole: false,
   },
   {
     name: "president",
     description: "College-level administrator",
     color: "orange",
     isStatic: true,
+    isPanelRole: false,
   },
   {
     name: "member",
     description: "Verified student member",
     color: "blue",
     isStatic: true,
+    isPanelRole: false,
   },
   {
     name: "unverified",
     description: "Pending account verification",
     color: "slate",
     isStatic: true,
+    isPanelRole: false,
   },
 ];
 
@@ -54,7 +58,12 @@ export async function POST(req: NextRequest) {
     await dbConnect();
     const body = await req.json();
 
-    const role = await Role.create(body);
+    const role = await Role.create({
+      name: body.name,
+      description: body.description,
+      color: body.color,
+      isPanelRole: body.isPanelRole || false,
+    });
     return NextResponse.json({ success: true, data: role });
   } catch (error: any) {
     return NextResponse.json(

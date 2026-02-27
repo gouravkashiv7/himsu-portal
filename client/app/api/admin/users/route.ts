@@ -34,9 +34,7 @@ export async function GET(req: NextRequest) {
     }
 
     let query: any = {
-      role: {
-        $in: ["member", "president", "unverified"],
-      },
+      role: { $ne: "superadmin" },
     };
 
     // If president, filter by their college
