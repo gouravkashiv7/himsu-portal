@@ -10,7 +10,7 @@ export function Footer() {
         <div className="flex flex-col md:flex-row justify-between items-center gap-4">
           <div className="flex flex-col items-center md:items-start text-center md:text-left">
             <div className="text-sm font-medium">
-              © HIMSU {2011}-{currentYear}
+              © HIMSU {2002}-{currentYear}
             </div>
             <p className="text-xs text-muted-foreground mt-1">
               Himachal Students Union. All rights reserved.

@@ -3,6 +3,8 @@
 import React, { Suspense, useEffect, useRef } from "react";
 import dynamic from "next/dynamic";
 
+import { cn } from "@/lib/utils";
+
 // Dynamically import the standard Spline component with SSR disabled
 const Spline = dynamic(() => import("@splinetool/react-spline"), {
   ssr: false,
@@ -51,14 +53,13 @@ export function SplineBackground() {
             On tablet / desktop it fills naturally.
           */}
           <div
-            className="
-              pointer-events-none
-              w-full h-full
-              [&>canvas]:w-full! [&>canvas]:h-full! [&>canvas]:object-cover
-              scale-[1.5] origin-top
-              sm:scale-[1.15] sm:origin-center
-              md:scale-100 md:origin-center
-            "
+            className={cn(
+              "pointer-events-none w-full h-full",
+              "[&>canvas]:w-full! [&>canvas]:h-full! [&>canvas]:object-cover",
+              "scale-[1.5] origin-top",
+              "sm:scale-[1.15] sm:origin-center",
+              "md:scale-100 md:origin-center",
+            )}
           >
             <Spline scene="https://prod.spline.design/qXPwShKp8X-0YIt0/scene.splinecode" />
           </div>

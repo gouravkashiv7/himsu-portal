@@ -11,6 +11,7 @@ import {
   Settings,
   ChevronRight,
   Shield,
+  CalendarDays,
 } from "lucide-react";
 
 import { useAuth } from "@/hooks/use-auth";
@@ -50,6 +51,12 @@ export function AdminSidebar() {
       href: "/admin/dashboard?tab=announcements",
       icon: Megaphone,
       active: currentTab === "announcements",
+    });
+    menuItems.push({
+      title: "Events",
+      href: "/admin/dashboard?tab=events",
+      icon: CalendarDays,
+      active: currentTab === "events",
     });
   }
 

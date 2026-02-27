@@ -1,15 +1,15 @@
 import { NextRequest, NextResponse } from "next/server";
 import dbConnect from "@/lib/db";
-import College from "@/lib/models/College";
+import FAQ from "@/lib/models/FAQ";
 
 export async function GET(req: NextRequest) {
   try {
     await dbConnect();
-    const colleges = await College.find({}).sort({ name: 1 });
+    const faqs = await FAQ.find({ isActive: true }).sort({ createdAt: -1 });
 
     return NextResponse.json({
       success: true,
-      data: colleges,
+      data: faqs,
     });
   } catch (error: any) {
     return NextResponse.json(

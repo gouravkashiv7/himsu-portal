@@ -61,6 +61,8 @@ type College = {
     course: string;
     designation: string;
   }[];
+  applyNowLink?: string;
+  brochureLink?: string;
 };
 
 export default function CollegeEditPage() {
@@ -87,6 +89,8 @@ export default function CollegeEditPage() {
     control,
     register,
     handleSubmit,
+    setValue,
+    watch,
     reset,
     formState: { errors },
   } = useForm<College>({
@@ -299,14 +303,50 @@ export default function CollegeEditPage() {
                 {...register("description")}
               />
             </div>
-            <div className="space-y-2">
+            <div className="col-span-full space-y-3">
               <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider ml-1">
-                Theme Color (Tailwind)
+                Theme Color (Tailwind Class)
               </label>
+              <div className="flex flex-wrap gap-3 p-4 bg-muted/20 border rounded-xl">
+                {[
+                  { label: "Default", class: "bg-primary" },
+                  { label: "Blue", class: "bg-blue-600" },
+                  { label: "Sky", class: "bg-sky-500" },
+                  { label: "Indigo", class: "bg-indigo-600" },
+                  { label: "Slate", class: "bg-slate-800" },
+                  { label: "Red", class: "bg-red-600" },
+                  { label: "Rose", class: "bg-rose-600" },
+                  { label: "Emerald", class: "bg-emerald-600" },
+                  { label: "Green", class: "bg-green-600" },
+                  { label: "Orange", class: "bg-orange-600" },
+                  { label: "Amber", class: "bg-amber-500" },
+                  { label: "Purple", class: "bg-purple-900" },
+                ].map((color) => (
+                  <button
+                    key={color.class}
+                    type="button"
+                    onClick={() => setValue("bannerColor", color.class)}
+                    className={`group relative w-12 h-12 rounded-lg ${color.class} border-2 transition-all flex items-center justify-center ${
+                      watch("bannerColor") === color.class
+                        ? "border-foreground scale-110 shadow-lg"
+                        : "border-transparent hover:scale-105"
+                    }`}
+                    title={color.label}
+                  >
+                    {watch("bannerColor") === color.class && (
+                      <div className="w-2 h-2 bg-white rounded-full" />
+                    )}
+                  </button>
+                ))}
+              </div>
               <input
-                className="flex h-12 w-full rounded-xl border border-input bg-muted/20 px-4 py-2 text-sm transition-all focus:bg-background focus:ring-2 focus:ring-primary/20"
+                className="flex h-12 w-full rounded-xl border border-input bg-muted/20 px-4 py-2 text-sm transition-all focus:bg-background focus:ring-2 focus:ring-primary/20 mt-2"
                 {...register("bannerColor")}
+                placeholder="e.g. bg-blue-600"
               />
+              <p className="text-[10px] text-muted-foreground ml-1">
+                Select a preset or enter a custom Tailwind background class.
+              </p>
             </div>
             <div className="space-y-2">
               <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider ml-1">
@@ -362,6 +402,27 @@ export default function CollegeEditPage() {
                 className="flex h-12 w-full rounded-xl border border-input bg-muted/20 px-4 py-2 text-sm transition-all focus:bg-background focus:ring-2 focus:ring-primary/20"
                 {...register("contact.whatsapp")}
                 placeholder="https://chat.whatsapp.com/..."
+              />
+            </div>
+            {/* Action Links */}
+            <div className="space-y-2">
+              <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider ml-1">
+                Apply Now Link
+              </label>
+              <input
+                className="flex h-12 w-full rounded-xl border border-input bg-muted/20 px-4 py-2 text-sm transition-all focus:bg-background focus:ring-2 focus:ring-primary/20"
+                {...register("applyNowLink")}
+                placeholder="https://..."
+              />
+            </div>
+            <div className="space-y-2">
+              <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider ml-1">
+                Download Brochure Link
+              </label>
+              <input
+                className="flex h-12 w-full rounded-xl border border-input bg-muted/20 px-4 py-2 text-sm transition-all focus:bg-background focus:ring-2 focus:ring-primary/20"
+                {...register("brochureLink")}
+                placeholder="https://..."
               />
             </div>
           </div>

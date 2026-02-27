@@ -1,7 +1,9 @@
 "use client";
 
 import * as React from "react";
-import { faqs, FAQCategory } from "@/lib/data/faqs";
+export type FAQCategory = "Admissions" | "Examinations" | "Hostel" | "General";
+import { useQuery } from "@tanstack/react-query";
+import axios from "axios";
 import {
   Accordion,
   AccordionContent,
@@ -9,19 +11,35 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import { Input } from "@/components/ui/input";
-import { Search } from "lucide-react";
+import { Search, Loader2 } from "lucide-react";
+
+interface FAQ {
+  _id: string;
+  question: string;
+  answer: string;
+  category: FAQCategory;
+}
 
 export default function FAQPage() {
   const [searchTerm, setSearchTerm] = React.useState("");
   const [category, setCategory] = React.useState<FAQCategory | "All">("All");
 
-  const filteredFaqs = faqs.filter((faq) => {
-    const matchesSearch =
-      faq.question.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      faq.answer.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesCategory = category === "All" || faq.category === category;
-    return matchesSearch && matchesCategory;
+  const { data: faqs, isLoading } = useQuery({
+    queryKey: ["faqs"],
+    queryFn: async () => {
+      const res = await axios.get("/api/faqs");
+      return res.data.data as FAQ[];
+    },
   });
+
+  const filteredFaqs =
+    faqs?.filter((faq) => {
+      const matchesSearch =
+        faq.question.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        faq.answer.toLowerCase().includes(searchTerm.toLowerCase());
+      const matchesCategory = category === "All" || faq.category === category;
+      return matchesSearch && matchesCategory;
+    }) || [];
 
   const categories: (FAQCategory | "All")[] = [
     "All",
@@ -70,11 +88,16 @@ export default function FAQPage() {
         </div>
       </div>
 
-      <div className="bg-card rounded-xl border p-2">
-        {filteredFaqs.length > 0 ? (
+      <div className="bg-card rounded-xl border p-2 min-h-75">
+        {isLoading ? (
+          <div className="flex flex-col items-center justify-center p-12 text-muted-foreground">
+            <Loader2 className="h-8 w-8 animate-spin mb-4 text-primary" />
+            <p>Loading FAQs...</p>
+          </div>
+        ) : filteredFaqs.length > 0 ? (
           <Accordion type="single" collapsible className="w-full">
             {filteredFaqs.map((faq) => (
-              <AccordionItem key={faq.id} value={faq.id}>
+              <AccordionItem key={faq._id} value={faq._id}>
                 <AccordionTrigger className="px-4 hover:no-underline hover:bg-muted/50 rounded-lg text-left">
                   <span className="font-semibold">{faq.question}</span>
                 </AccordionTrigger>

@@ -16,6 +16,7 @@ const navLinks = [
   { href: "/resources", label: "Resources" },
   { href: "/faq", label: "FAQ / Help" },
   { href: "/college/pu", label: "PU Campus" },
+  { href: "/events", label: "Events" },
   { href: "/blood-donation", label: "Donate Blood", highlight: true },
 ];
 

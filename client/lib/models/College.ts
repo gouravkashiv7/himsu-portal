@@ -49,6 +49,8 @@ const CollegeSchema = new Schema(
     courses: [CourseSchema],
     importantDates: [DateSchema],
     volunteers: [VolunteerSchema],
+    applyNowLink: { type: String },
+    brochureLink: { type: String },
     president: { type: Schema.Types.ObjectId, ref: "User" },
   },
   { timestamps: true },

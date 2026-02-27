@@ -1,15 +1,25 @@
 import { NextRequest, NextResponse } from "next/server";
 import dbConnect from "@/lib/db";
-import College from "@/lib/models/College";
+import Resource from "@/lib/models/Resource";
 
 export async function GET(req: NextRequest) {
   try {
     await dbConnect();
-    const colleges = await College.find({}).sort({ name: 1 });
+
+    // allow filtering by type
+    const searchParams = req.nextUrl.searchParams;
+    const type = searchParams.get("type");
+
+    const query: any = { isActive: true };
+    if (type) {
+      query.type = type;
+    }
+
+    const resources = await Resource.find(query).sort({ createdAt: -1 });
 
     return NextResponse.json({
       success: true,
-      data: colleges,
+      data: resources,
     });
   } catch (error: any) {
     return NextResponse.json(

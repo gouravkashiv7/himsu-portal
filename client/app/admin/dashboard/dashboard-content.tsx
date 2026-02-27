@@ -5,9 +5,16 @@ import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
 import { CollegeManagement } from "@/components/admin/college-management";
 import { AnnouncementManagement } from "@/components/admin/announcement-management";
+import { EventManagement } from "@/components/admin/event-management";
 import { UserManagement } from "@/components/admin/user-management";
 import UserDashboard from "@/components/dashboard/user-dashboard";
-import { GraduationCap, Users, Megaphone, Loader2 } from "lucide-react";
+import {
+  GraduationCap,
+  Users,
+  Megaphone,
+  Loader2,
+  CalendarDays,
+} from "lucide-react";
 import {
   Card,
   CardContent,
@@ -68,6 +75,15 @@ export function DashboardContent() {
     queryKey: ["announcements"],
     queryFn: async () => {
       const res = await axios.get("/api/announcements");
+      return res.data.data;
+    },
+    enabled: !!canAccess,
+  });
+
+  const { data: events, isLoading: loadingEvents } = useQuery({
+    queryKey: ["events"],
+    queryFn: async () => {
+      const res = await axios.get("/api/events");
       return res.data.data;
     },
     enabled: !!canAccess,
@@ -164,6 +180,26 @@ export function DashboardContent() {
             </p>
           </CardContent>
         </Card>
+        <Card className="border-none shadow-md bg-linear-to-br from-green-500/10 to-transparent rounded-xl">
+          <CardHeader className="flex flex-row items-center justify-between pb-1 p-4">
+            <CardTitle className="text-[10px] md:text-sm font-bold uppercase tracking-wider text-muted-foreground truncate">
+              Events
+            </CardTitle>
+            <CalendarDays className="h-3 w-3 md:h-4 md:w-4 text-green-500" />
+          </CardHeader>
+          <CardContent className="p-4 pt-0">
+            {loadingEvents ? (
+              <Loader2 className="h-4 w-4 md:h-6 md:w-6 animate-spin text-green-500/50" />
+            ) : (
+              <div className="text-xl md:text-3xl font-black">
+                {events?.length || 0}
+              </div>
+            )}
+            <p className="text-[8px] md:text-[10px] text-muted-foreground mt-1 font-bold truncate">
+              Hosted events
+            </p>
+          </CardContent>
+        </Card>
       </div>
 
       {/* Management Tabs */}
@@ -187,6 +223,12 @@ export function DashboardContent() {
               className="px-4 md:px-6 py-2 md:py-2.5 rounded-lg data-[state=active]:bg-background data-[state=active]:shadow-sm font-bold text-[10px] md:text-xs uppercase tracking-widest whitespace-nowrap"
             >
               Announcements
+            </TabsTrigger>
+            <TabsTrigger
+              value="events"
+              className="px-4 md:px-6 py-2 md:py-2.5 rounded-lg data-[state=active]:bg-background data-[state=active]:shadow-sm font-bold text-[10px] md:text-xs uppercase tracking-widest whitespace-nowrap"
+            >
+              Events
             </TabsTrigger>
             {!isSuperAdmin && (
               <TabsTrigger
@@ -259,6 +301,22 @@ export function DashboardContent() {
             </CardHeader>
             <CardContent className="p-0 sm:p-6">
               <AnnouncementManagement />
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="events" className="mt-0 focus-visible:outline-none">
+          <Card className="border-none shadow-xl shadow-black/5 rounded-3xl overflow-hidden">
+            <CardHeader className="bg-muted/10 border-b border-border/50">
+              <CardTitle className="text-xl font-black">
+                Event Management
+              </CardTitle>
+              <CardDescription className="text-xs font-medium">
+                Create and manage events for the HIMSU portal.
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="p-0 sm:p-6">
+              <EventManagement />
             </CardContent>
           </Card>
         </TabsContent>

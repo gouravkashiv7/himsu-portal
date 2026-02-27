@@ -1,20 +1,39 @@
 "use client";
 
 import * as React from "react";
-import { resources } from "@/lib/data/resources";
+import { useQuery } from "@tanstack/react-query";
+import axios from "axios";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Download, Filter, Search } from "lucide-react";
+import { Download, Filter, Search, Loader2, FileText } from "lucide-react";
+
+interface Resource {
+  _id: string;
+  title: string;
+  type: string;
+  subject: string;
+  course: string;
+  semester: string;
+  year?: string;
+  link: string;
+}
 
 export default function PYQPage() {
   const [searchTerm, setSearchTerm] = React.useState("");
   const [selectedCourse, setSelectedCourse] = React.useState<string>("All");
 
-  const pyqs = resources.filter((r) => r.type === "PYQ");
-  const courses = Array.from(new Set(pyqs.map((r) => r.course)));
+  const { data: pyqs, isLoading } = useQuery({
+    queryKey: ["resources", "PYQ"],
+    queryFn: async () => {
+      const res = await axios.get("/api/resources?type=PYQ");
+      return res.data.data as Resource[];
+    },
+  });
 
-  const filteredPYQs = pyqs.filter((item) => {
+  const courses = Array.from(new Set(pyqs?.map((r) => r.course) || []));
+
+  const filteredPYQs = pyqs?.filter((item) => {
     const matchesSearch =
       item.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
       item.subject.toLowerCase().includes(searchTerm.toLowerCase());
@@ -63,9 +82,19 @@ export default function PYQPage() {
       </div>
 
       <div className="space-y-4">
-        {filteredPYQs.length > 0 ? (
+        {isLoading ? (
+          <div className="flex flex-col items-center justify-center py-24 space-y-4">
+            <Loader2 className="w-10 h-10 animate-spin text-primary/40" />
+            <p className="text-sm font-black uppercase tracking-widest text-muted-foreground/60">
+              Loading PYQs...
+            </p>
+          </div>
+        ) : filteredPYQs && filteredPYQs.length > 0 ? (
           filteredPYQs.map((item) => (
-            <Card key={item.id} className="hover:bg-muted/30 transition-colors">
+            <Card
+              key={item._id}
+              className="hover:bg-muted/30 transition-colors"
+            >
               <CardContent className="p-4 flex flex-col sm:flex-row items-center justify-between gap-4">
                 <div className="flex items-center gap-4 w-full sm:w-auto">
                   <div className="w-10 h-10 rounded-lg bg-red-100 dark:bg-red-900/20 flex items-center justify-center text-red-600 shrink-0">
@@ -81,6 +110,12 @@ export default function PYQPage() {
                       <span>Sem {item.semester}</span>
                       <span>•</span>
                       <span>{item.subject}</span>
+                      {item.year && (
+                        <>
+                          <span>•</span>
+                          <span>{item.year}</span>
+                        </>
+                      )}
                     </div>
                   </div>
                 </div>
@@ -89,15 +124,22 @@ export default function PYQPage() {
                   size="sm"
                   variant="outline"
                   className="w-full sm:w-auto gap-2"
+                  asChild
                 >
-                  <Download className="w-4 h-4" /> Download
+                  <a href={item.link} target="_blank" rel="noopener noreferrer">
+                    <Download className="w-4 h-4" /> Download
+                  </a>
                 </Button>
               </CardContent>
             </Card>
           ))
         ) : (
-          <div className="text-center py-12 text-muted-foreground">
-            No question papers found matching your search.
+          <div className="text-center py-20 bg-muted/20 rounded-3xl border border-dashed border-border/50">
+            <FileText className="w-12 h-12 mx-auto text-muted-foreground/30 mb-4" />
+            <h3 className="text-lg font-bold mb-1">No PYQs found</h3>
+            <p className="text-sm text-muted-foreground">
+              Try adjusting your search criteria.
+            </p>
           </div>
         )}
       </div>

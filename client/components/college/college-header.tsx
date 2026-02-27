@@ -67,10 +67,28 @@ export function CollegeHeader({ college }: CollegeHeaderProps) {
 
           {/* Action Buttons */}
           <div className="flex gap-3 w-full md:w-auto mt-4 md:mt-0">
-            <Button className="flex-1 md:flex-none">Apply Now</Button>
-            <Button variant="outline" className="flex-1 md:flex-none">
-              Download Brochure
-            </Button>
+            {(college.applyNowLink || college.contact?.website) && (
+              <Button className="flex-1 md:flex-none" asChild>
+                <a
+                  href={college.applyNowLink || college.contact.website}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  Apply Now
+                </a>
+              </Button>
+            )}
+            {college.brochureLink && (
+              <Button variant="outline" className="flex-1 md:flex-none" asChild>
+                <a
+                  href={college.brochureLink}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  Download Brochure
+                </a>
+              </Button>
+            )}
           </div>
         </div>
 
