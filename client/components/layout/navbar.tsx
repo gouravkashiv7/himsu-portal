@@ -49,6 +49,7 @@ export function Navbar() {
               src="/logo.jpg"
               alt="HIMSU Logo"
               fill
+              sizes="40px"
               className="object-cover"
             />
           </div>

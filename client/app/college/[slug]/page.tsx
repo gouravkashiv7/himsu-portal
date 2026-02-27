@@ -1,4 +1,5 @@
 import { notFound } from "next/navigation";
+import type { Metadata } from "next";
 import dbConnect from "@/lib/db";
 import College from "@/lib/models/College";
 import { CollegeHeader } from "@/components/college/college-header";
@@ -7,6 +8,54 @@ import { MessageCircle } from "lucide-react";
 
 // Force dynamic rendering to ensure latest data from DB is always shown
 export const dynamic = "force-dynamic";
+
+// Friendly name lookup for SEO
+const collegeMeta: Record<string, { title: string; description: string }> = {
+  pu: {
+    title: "Panjab University Admissions",
+    description:
+      "Admission portal for Panjab University, Chandigarh — courses, merit lists, important dates, and HIMSU volunteer support.",
+  },
+  dav: {
+    title: "DAV College Admissions – Sector 10",
+    description:
+      "Admission portal for DAV College, Sector 10, Chandigarh — courses, fee structure, and admission process.",
+  },
+  "ppgc-11": {
+    title: "PPGC-11 Admissions – Sector 11",
+    description:
+      "Admission portal for Post Graduate Government College, Sector 11, Chandigarh.",
+  },
+  sd: {
+    title: "SD College Admissions – Sector 32",
+    description:
+      "Admission portal for GGDSD College, Sector 32, Chandigarh — a legacy of quality education.",
+  },
+};
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ slug: string }>;
+}): Promise<Metadata> {
+  const { slug } = await params;
+  const meta = collegeMeta[slug];
+
+  return {
+    title: meta?.title || `College Admissions`,
+    description:
+      meta?.description ||
+      "College admission portal powered by HIMSU – Himachal Students Union.",
+    alternates: {
+      canonical: `/college/${slug}`,
+    },
+    openGraph: {
+      title: meta?.title || "College Admissions – HIMSU",
+      description: meta?.description || "Admissions portal by HIMSU.",
+      url: `https://himsu.in/college/${slug}`,
+    },
+  };
+}
 
 export default async function CollegePage({
   params,

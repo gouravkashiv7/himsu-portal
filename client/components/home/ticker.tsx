@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
-import { Loader2 } from "lucide-react";
+import { motion } from "framer-motion";
 
 interface Announcement {
   _id: string;
@@ -33,51 +33,61 @@ export function AlertTicker() {
     fetchAnnouncements();
   }, []);
 
-  if (loading) return null; // Or a skeleton specifically for ticker but better to just not show if loading
+  if (loading) return null;
   if (announcements.length === 0) return null;
 
+  const tickerContent = announcements.map((item, index) => (
+    <div key={item._id} className="flex items-center mx-4 shrink-0">
+      {item.link ? (
+        <Link
+          href={item.link}
+          target="_blank"
+          className="text-sm font-medium hover:underline hover:text-primary transition-colors cursor-pointer whitespace-nowrap"
+        >
+          {item.text}
+        </Link>
+      ) : (
+        <span className="text-sm font-medium cursor-default whitespace-nowrap">
+          {item.text}
+        </span>
+      )}
+      <span className="mx-4 text-primary/40">•</span>
+    </div>
+  ));
+
   return (
-    <div className="relative w-full bg-primary/5 border-b border-primary/10 overflow-hidden h-10 flex items-center">
+    <motion.div
+      initial={{ y: -40, opacity: 0 }}
+      animate={{ y: 0, opacity: 1 }}
+      transition={{ duration: 0.5, ease: "easeOut" }}
+      className="relative w-full bg-primary/5 border-b border-primary/10 overflow-hidden h-10 flex items-center"
+    >
       {/* Label */}
-      <div className="absolute left-0 top-0 bottom-0 bg-primary text-primary-foreground px-4 flex items-center z-20 font-bold text-xs uppercase tracking-wider shadow-md">
+      <div className="absolute left-0 top-0 bottom-0 bg-primary text-primary-foreground px-3 sm:px-4 flex items-center z-20 font-bold text-[10px] sm:text-xs uppercase tracking-wider shadow-md">
+        <span className="flex h-1.5 w-1.5 rounded-full bg-white/80 mr-1.5 animate-pulse" />
         Updates
       </div>
 
       {/* Marquee Container */}
       <div className="flex w-full overflow-hidden group">
-        <div className="animate-marquee whitespace-nowrap flex items-center group-hover:paused pl-24">
-          {announcements.map((item, index) => (
-            <div key={item._id} className="flex items-center mx-4">
+        <div className="animate-marquee whitespace-nowrap flex items-center group-hover:paused pl-20 sm:pl-24">
+          {tickerContent}
+          {/* Duplicate for seamless loop */}
+          {announcements.map((item) => (
+            <div
+              key={`${item._id}-dup`}
+              className="flex items-center mx-4 shrink-0"
+            >
               {item.link ? (
                 <Link
                   href={item.link}
                   target="_blank"
-                  className="text-sm font-medium hover:underline hover:text-primary transition-colors cursor-pointer"
+                  className="text-sm font-medium hover:underline hover:text-primary transition-colors cursor-pointer whitespace-nowrap"
                 >
                   {item.text}
                 </Link>
               ) : (
-                <span className="text-sm font-medium cursor-default">
-                  {item.text}
-                </span>
-              )}
-              {/* Separator if not last */}
-              <span className="mx-4 text-primary/40">•</span>
-            </div>
-          ))}
-          {/* Duplicate for seamless loop (simplified for now, full seamless usually needs double render) */}
-          {announcements.map((item, index) => (
-            <div key={`${item._id}-dup`} className="flex items-center mx-4">
-              {item.link ? (
-                <Link
-                  href={item.link}
-                  target="_blank"
-                  className="text-sm font-medium hover:underline hover:text-primary transition-colors cursor-pointer"
-                >
-                  {item.text}
-                </Link>
-              ) : (
-                <span className="text-sm font-medium cursor-default">
+                <span className="text-sm font-medium cursor-default whitespace-nowrap">
                   {item.text}
                 </span>
               )}
@@ -86,6 +96,6 @@ export function AlertTicker() {
           ))}
         </div>
       </div>
-    </div>
+    </motion.div>
   );
 }
