@@ -6,7 +6,7 @@ import User from "@/lib/models/User";
 // POST: Add Comment (Authenticated Users Only)
 export async function POST(
   req: NextRequest,
-  { params }: { params: { id: string } },
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
     const { id } = await params;

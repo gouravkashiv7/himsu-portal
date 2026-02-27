@@ -305,7 +305,7 @@ export default function CollegeEditPage() {
             </div>
             <div className="col-span-full space-y-3">
               <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider ml-1">
-                Theme Color (Tailwind Class)
+                Header Banner Background Color
               </label>
               <div className="flex flex-wrap gap-3 p-4 bg-muted/20 border rounded-xl">
                 {[
@@ -344,8 +344,9 @@ export default function CollegeEditPage() {
                 {...register("bannerColor")}
                 placeholder="e.g. bg-blue-600"
               />
-              <p className="text-[10px] text-muted-foreground ml-1">
-                Select a preset or enter a custom Tailwind background class.
+              <p className="text-[10px] text-muted-foreground ml-1 font-medium">
+                This color will be used for the background of the header section
+                on the college public profile page.
               </p>
             </div>
             <div className="space-y-2">
